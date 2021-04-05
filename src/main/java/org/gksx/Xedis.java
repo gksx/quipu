@@ -28,7 +28,8 @@ public class Xedis {
     public String call(String... args) throws IOException {
         var formatted = commandBuilder(args);
         outputStream.write(formatted);
-        outputStream.flush();
+        outputStream.flush();//todo:
+        
 
         
         return proccessReply();
