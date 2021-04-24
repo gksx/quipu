@@ -2,7 +2,11 @@ package org.gksx;
 
 
 
+import java.io.IOException;
+import java.util.Arrays;
+
 import org.gksx.quipu.Quipu;
+import org.gksx.quipu.QuipuException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,7 +25,6 @@ public class AppTest
         var q = Quipu.commandBuilder(args);
 
         for (int i = 0; i < q.length; i++) {
-            System.out.println((char)q[i]);
             Assert.assertEquals(bytesExpected[i], q[i]);
         }
     }
@@ -34,11 +37,53 @@ public class AppTest
         int len = 0;
 
         for (int i = 1; (char)bytesToParse[i] != '\r'; i++){
-            System.out.println(bytesToParse[i]);
+            
             len = (len*10) + ((char)bytesToParse[i] -'0');
         }
 
-        System.out.println(len);
+        Assert.assertEquals(10, len);
+    }
 
+
+    @Test
+    public void lpush() throws IOException, QuipuException {
+
+        Quipu q = new Quipu();
+
+        var s = q.call("lrange", "mylist", "0", "-1");
+            
+        
+        var arry = Arrays.asList(s.split(";"));
+
+        for (String el : arry) {
+            System.out.println(el);
+        }
+
+        q.close();
+
+    }
+
+    @Test
+    public void incr() throws IOException, QuipuException {
+
+        Quipu q = new Quipu();
+
+        q.call("set", "mykey", "10");
+
+        var resp = q.call("incr", "mykey");
+
+        q.close();
+
+        Assert.assertEquals(11, Integer.parseInt(resp));
+    }
+
+    @Test
+    public void null_return() throws IOException, QuipuException {
+
+        Quipu q = new Quipu();
+
+        var resp = q.call("get", "hej");
+
+        Assert.assertEquals(null, resp);
     }
 }

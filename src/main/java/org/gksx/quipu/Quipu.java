@@ -5,33 +5,38 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Optional;
 
 public class Quipu {
 
-    public static final byte DOLLAR_BYTE = '$';
-    public static final byte ASTERISK_BYTE = '*';
-    public static final byte PLUS_BYTE = '+';
-    public static final byte MINUS_BYTE = '-';
-    public static final byte COLON_BYTE = ':';
+    private static final byte DOLLAR_BYTE = '$';
+    private static final byte ASTERISK_BYTE = '*';
+    private static final byte PLUS_BYTE = '+';
+    private static final byte MINUS_BYTE = '-';
+    private static final byte COLON_BYTE = ':';
     
     private Socket clientSocket;
     private BufferedReader in;
     private OutputStream outputStream;
     private static final char CARRIAGE_RETURN = '\r';
     private static final String CARRIAGE_RETURN_LINE_FEED = "\r\n";
-    private String uri;
-    private int port;
+    private String uri = "127.0.0.1";
+    private int port = 6379;
 
-    public Quipu(String uri, int port) {
+    public Quipu(String uri, int port) throws IOException {
         this.uri = uri;
         this.port = port;
+        open();
     }
 
-    public Quipu startConnection() throws IOException {
+    public Quipu() throws IOException {
+        open();
+    }
+
+    public void open() throws IOException {
         clientSocket = new Socket(uri, port);
         outputStream = clientSocket.getOutputStream();
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        return this;
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));   
     }
 
     public String call(String... args) throws IOException, QuipuException {
@@ -42,14 +47,18 @@ public class Quipu {
         return proccessReply();
     }
 
-
-
-    public int parse() throws IOException{
+    public int parse() throws IOException, QuipuException{
         int len = 0;
 
         char p = (char)in.read();
 
         while (p != CARRIAGE_RETURN){
+            
+            if (p == '-'){
+                moveToEndOfLine();
+                return 0;
+            }
+
             len = (len*10) + (p - '0');
             p = (char)in.read();
         }
@@ -58,7 +67,10 @@ public class Quipu {
         return len;
     }
 
-    public String parseBulkString(int len) throws IOException, QuipuException{
+    private String parseBulkString(int len) throws IOException, QuipuException{
+
+        if (len == 0) return null;
+        
         char[] buf = new char[len];
 
         in.read(buf, 0, len);
@@ -73,12 +85,11 @@ public class Quipu {
     private String proccessReply() throws IOException, QuipuException {
         char prefix = (char)in.read();
 
-
         switch (prefix){
             case DOLLAR_BYTE:{
                 int len = parse();
                 var q = parseBulkString(len);
-                return q.toString();
+                return q == null ? null : q.toString();
             }
             case ASTERISK_BYTE:{
                 return parseBulkArray();                
@@ -90,6 +101,9 @@ public class Quipu {
                 String errorMessage = in.readLine();
                 throw new QuipuException(errorMessage);
             }
+            case COLON_BYTE:{
+                return in.readLine();
+            }
             default:
                 throw new QuipuException("somethin went wrong");
 
@@ -97,11 +111,20 @@ public class Quipu {
         
     }
 
-    private String parseBulkArray() {
-        return null;
+    private String parseBulkArray() throws IOException, QuipuException {
+
+        int elemnts = parse();
+
+        String reply = "";
+
+        for(var i = 0; i < elemnts; i++) {
+            reply = reply + ";" + proccessReply();
+        }
+
+        return reply;
     }
 
-    public void stopConnection() throws IOException {
+    public void close() throws IOException {
         in.close();
         outputStream.close();
         clientSocket.close();
