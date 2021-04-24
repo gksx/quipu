@@ -1,4 +1,4 @@
-package org.gksx.Quipu;
+package org.gksx.quipu;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +13,7 @@ public class Quipu {
     public static final byte PLUS_BYTE = '+';
     public static final byte MINUS_BYTE = '-';
     public static final byte COLON_BYTE = ':';
+    
     private Socket clientSocket;
     private BufferedReader in;
     private OutputStream outputStream;
@@ -42,6 +43,7 @@ public class Quipu {
     }
 
 
+
     public int parse() throws IOException{
         int len = 0;
 
@@ -53,16 +55,19 @@ public class Quipu {
         }
         in.read();
         
-
         return len;
     }
 
-    public String parseBulkString(int len) throws IOException{
+    public String parseBulkString(int len) throws IOException, QuipuException{
         char[] buf = new char[len];
 
         in.read(buf, 0, len);
-
+        moveToEndOfLine();
         return String.valueOf(buf);
+    }
+
+    public void moveToEndOfLine() throws QuipuException, IOException {
+        in.readLine();
     }
 
     private String proccessReply() throws IOException, QuipuException {
@@ -76,8 +81,7 @@ public class Quipu {
                 return q.toString();
             }
             case ASTERISK_BYTE:{
-                proccessReply();
-                break;
+                return parseBulkArray();                
             }
             case PLUS_BYTE:{
                 return in.readLine();
@@ -87,10 +91,14 @@ public class Quipu {
                 throw new QuipuException(errorMessage);
             }
             default:
-                break;
+                throw new QuipuException("somethin went wrong");
 
         }          
-        throw new QuipuException("somethin went wrong");
+        
+    }
+
+    private String parseBulkArray() {
+        return null;
     }
 
     public void stopConnection() throws IOException {

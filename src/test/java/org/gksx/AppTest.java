@@ -2,7 +2,7 @@ package org.gksx;
 
 
 
-import org.gksx.Quipu.Quipu;
+import org.gksx.quipu.Quipu;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,13 +14,14 @@ public class AppTest
     @Test
     public void shouldBeFormmatted() {
 
-        String[] args = {"LLEN", "mylist"};
+        String[] args = {"get", "tja", "tjä"};
 
-        var bytesExpected = new String("*2\r\n$4\r\nLLEN\r\n$6\r\nmylist\r\n").getBytes();
+        var bytesExpected = new String("*3\r\n$3\r\nget\r\n$3\r\ntja\r\n$3\r\ntjä\r\n").getBytes();
 
         var q = Quipu.commandBuilder(args);
 
         for (int i = 0; i < q.length; i++) {
+            System.out.println((char)q[i]);
             Assert.assertEquals(bytesExpected[i], q[i]);
         }
     }

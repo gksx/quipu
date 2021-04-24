@@ -3,8 +3,8 @@ package org.gksx;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import org.gksx.Quipu.Quipu;
-import org.gksx.Quipu.QuipuException;
+import org.gksx.quipu.Quipu;
+import org.gksx.quipu.QuipuException;
 
 /**
  * Hello world!
@@ -20,7 +20,7 @@ public class App
                 .startConnection();
             
 
-            String h = quipu.call("ret", "tja", "varför");
+            String h = quipu.call("set", "tja", "varför");
 
             System.out.println(h);
 
@@ -28,6 +28,10 @@ public class App
             
 
             System.out.println(q);
+            String q1 = quipu.call("get", "tja");
+            
+
+            System.out.println(q1);
             
 
         } catch (UnknownHostException e) {

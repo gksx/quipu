@@ -1,4 +1,4 @@
-package org.gksx.Quipu;
+package org.gksx.quipu;
 
 public class QuipuException extends Exception {
     public QuipuException(String message){
