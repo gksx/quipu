@@ -3,6 +3,9 @@ package org.gksx;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import org.gksx.Quipu.Quipu;
+import org.gksx.Quipu.QuipuException;
+
 /**
  * Hello world!
  *
@@ -11,26 +14,32 @@ public class App
 {
     public static void main( String[] args )
     {
-        var xedis = new Xedis();
         try {
             
-            xedis.startConnection("localhost", 6379);
+            var quipu = new Quipu("localhost", 6379)
+                .startConnection();
             
-            String q = xedis.call("lrange", "mylist", "0", "-1");
-            xedis.stopConnection();
+
+            String h = quipu.call("ret", "tja", "varför");
+
+            System.out.println(h);
+
+            String q = quipu.call("get", "hej");
+            
 
             System.out.println(q);
             
 
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
+            
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            
             e.printStackTrace();
+        } catch (QuipuException e){
+            e.printStackTrace();
+
         }
-
-
     }
 }
 
