@@ -2,6 +2,8 @@ package org.gksx;
 
 
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -82,8 +84,10 @@ public class AppTest
 
         Quipu q = new Quipu();
 
-        var resp = q.call("get", "hej");
+        q.call("set", "hej", "tja");
 
-        Assert.assertEquals(null, resp);
+        var resp = q.call("get", "hej");
+        assertEquals("tja", resp);
+
     }
 }

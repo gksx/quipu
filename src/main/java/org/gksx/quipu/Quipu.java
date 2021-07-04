@@ -33,8 +33,10 @@ public class Quipu {
     }
 
     public void open() throws IOException {
-        clientSocket = new Socket(uri, port);
-        outputStream = clientSocket.getOutputStream();
+        this.clientSocket = Connection.connectionBuilder(this.uri,this.port)
+                                  .getSocket();
+                                
+        outputStream = this.clientSocket.getOutputStream();
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));   
     }
 
