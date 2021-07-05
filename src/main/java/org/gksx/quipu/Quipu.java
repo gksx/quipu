@@ -1,9 +1,6 @@
 package org.gksx.quipu;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
 
 public class Quipu {
@@ -73,17 +70,17 @@ public class Quipu {
         
         char[] buf = new char[len];
 
-        in.read(buf, 0, len);
+        quipuStream.getBufferedReader().read(buf, 0, len);
         moveToEndOfLine();
         return String.valueOf(buf);
     }
 
     public void moveToEndOfLine() throws QuipuException, IOException {
-        in.readLine();
+        quipuStream.getBufferedReader().readLine();
     }
 
     private String proccessReply() throws IOException, QuipuException {
-        char prefix = (char)in.read();
+        char prefix = quipuStream.read();
 
         switch (prefix){
             case DOLLAR_BYTE:{
@@ -95,14 +92,14 @@ public class Quipu {
                 return parseBulkArray();                
             }
             case PLUS_BYTE:{
-                return in.readLine();
+                return quipuStream.getBufferedReader().readLine();
             }
             case MINUS_BYTE:{
-                String errorMessage = in.readLine();
+                String errorMessage = quipuStream.getBufferedReader().readLine();
                 throw new QuipuException(errorMessage);
             }
             case COLON_BYTE:{
-                return in.readLine();
+                return quipuStream.getBufferedReader().readLine();
             }
             default:
                 throw new QuipuException("somethin went wrong");
@@ -125,9 +122,8 @@ public class Quipu {
     }
 
     public void close() throws IOException {
-        in.close();
-        outputStream.close();
         clientSocket.close();
+        quipuStream.close();
     }
 
     public static byte[] commandBuilder(String... args){

@@ -23,6 +23,10 @@ public class Connection {
         return socket;
     }
 
+    public void closeSocket() throws IOException{
+        socket.close();
+    }
+
     public static Connection connectionBuilder(String uri, int port){
         return new Connection(uri, port);
     }

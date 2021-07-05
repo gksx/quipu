@@ -26,4 +26,9 @@ public class QuipuStream {
     public char read() throws IOException{
         return(char) bufferedReader.read();
     }
+
+    public void close() throws IOException{
+        outputStream.close();
+        bufferedReader.close();
+    }
 }

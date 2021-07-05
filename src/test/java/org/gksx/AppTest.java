@@ -89,5 +89,7 @@ public class AppTest
         var resp = q.call("get", "hej");
         assertEquals("tja", resp);
 
+        q.close();
+
     }
 }
