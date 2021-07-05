@@ -1,7 +1,6 @@
 package org.gksx.quipu;
 
 import java.io.IOException;
-import java.net.Socket;
 
 public class Quipu {
 
@@ -9,31 +8,26 @@ public class Quipu {
     private static final byte ASTERISK_BYTE = '*';
     private static final byte PLUS_BYTE = '+';
     private static final byte MINUS_BYTE = '-';
-    private static final byte COLON_BYTE = ':';
-    
-    private Socket clientSocket;
-    private QuipuStream quipuStream;
+    private static final byte COLON_BYTE = ':';   
     private static final char CARRIAGE_RETURN = '\r';
     private static final String CARRIAGE_RETURN_LINE_FEED = "\r\n";
     private String uri = "127.0.0.1";
     private int port = 6379;
 
+    private QuipuStream quipuStream;
+
     public Quipu(String uri, int port) throws IOException {
         this.uri = uri;
         this.port = port;
-        open();
+        openQuipuStream();
     }
 
     public Quipu() throws IOException {
-        open();
+        openQuipuStream();
     }
 
-    public void open() throws IOException {
-        this.clientSocket = Connection.connectionBuilder(this.uri,this.port)
-                                  .getSocket();
-
-        quipuStream = new QuipuStream(clientSocket);                        
-                                
+    private void openQuipuStream() throws IOException {
+        quipuStream = new QuipuStream(this.uri, this.port);                                                        
     }
 
     public String call(String... args) throws IOException, QuipuException {
@@ -52,7 +46,7 @@ public class Quipu {
         while (p != CARRIAGE_RETURN){
             
             if (p == '-'){
-                moveToEndOfLine();
+                quipuStream.moveToEndOfLine();
                 return 0;
             }
 
@@ -70,13 +64,10 @@ public class Quipu {
         
         char[] buf = new char[len];
 
-        quipuStream.getBufferedReader().read(buf, 0, len);
-        moveToEndOfLine();
+        
+        quipuStream.readBuf(buf, 0, len);
+        quipuStream.moveToEndOfLine();
         return String.valueOf(buf);
-    }
-
-    public void moveToEndOfLine() throws QuipuException, IOException {
-        quipuStream.getBufferedReader().readLine();
     }
 
     private String proccessReply() throws IOException, QuipuException {
@@ -122,7 +113,6 @@ public class Quipu {
     }
 
     public void close() throws IOException {
-        clientSocket.close();
         quipuStream.close();
     }
 

@@ -80,7 +80,7 @@ public class AppTest
     }
 
     @Test
-    public void null_return() throws IOException, QuipuException {
+    public void set_and_get() throws IOException, QuipuException {
 
         Quipu q = new Quipu();
 

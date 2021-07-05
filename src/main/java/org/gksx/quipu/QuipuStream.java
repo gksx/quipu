@@ -10,8 +10,10 @@ public class QuipuStream {
 
     private OutputStream outputStream;
     private BufferedReader bufferedReader;
+    private Socket socket;
 
-    public QuipuStream(Socket socket) throws IOException{
+    public QuipuStream(String uri, int port) throws IOException {
+        socket = new Socket(uri, port);
         outputStream = socket.getOutputStream();
         bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));   
     }
@@ -30,5 +32,16 @@ public class QuipuStream {
     public void close() throws IOException{
         outputStream.close();
         bufferedReader.close();
+        socket.close();
     }
+
+    public int readBuf(char[] buf, int i, int len) throws IOException {
+        return bufferedReader.read(buf, 0, len);
+    }
+
+    public void moveToEndOfLine() throws IOException {
+        bufferedReader.readLine();
+    }
+
+
 }
