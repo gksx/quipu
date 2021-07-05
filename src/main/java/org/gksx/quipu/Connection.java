@@ -6,11 +6,9 @@ import java.net.UnknownHostException;
 
 public class Connection {
     private Socket socket;
-
-
     private Connection(String uri, int port){
         try {
-            this.socket = new Socket(uri, port);
+            socket = new Socket(uri, port);
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -22,7 +20,7 @@ public class Connection {
     }
 
     public Socket getSocket(){
-        return this.socket;
+        return socket;
     }
 
     public static Connection connectionBuilder(String uri, int port){

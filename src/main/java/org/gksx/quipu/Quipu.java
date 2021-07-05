@@ -15,8 +15,7 @@ public class Quipu {
     private static final byte COLON_BYTE = ':';
     
     private Socket clientSocket;
-    private BufferedReader in;
-    private OutputStream outputStream;
+    private QuipuStream quipuStream;
     private static final char CARRIAGE_RETURN = '\r';
     private static final String CARRIAGE_RETURN_LINE_FEED = "\r\n";
     private String uri = "127.0.0.1";
@@ -35,15 +34,15 @@ public class Quipu {
     public void open() throws IOException {
         this.clientSocket = Connection.connectionBuilder(this.uri,this.port)
                                   .getSocket();
+
+        quipuStream = new QuipuStream(clientSocket);                        
                                 
-        outputStream = this.clientSocket.getOutputStream();
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));   
     }
 
     public String call(String... args) throws IOException, QuipuException {
         var formatted = commandBuilder(args);
-        outputStream.write(formatted);
-        outputStream.flush();
+        quipuStream.getOutputStream().write(formatted);
+        quipuStream.getOutputStream().flush();
 
         return proccessReply();
     }
@@ -51,7 +50,7 @@ public class Quipu {
     public int parse() throws IOException, QuipuException{
         int len = 0;
 
-        char p = (char)in.read();
+        char p = quipuStream.read();
 
         while (p != CARRIAGE_RETURN){
             
@@ -61,9 +60,9 @@ public class Quipu {
             }
 
             len = (len*10) + (p - '0');
-            p = (char)in.read();
+            p = quipuStream.read();
         }
-        in.read();
+        quipuStream.read();
         
         return len;
     }
