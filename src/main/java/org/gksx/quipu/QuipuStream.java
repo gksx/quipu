@@ -36,11 +36,16 @@ public class QuipuStream {
     }
 
     public int readBuf(char[] buf, int i, int len) throws IOException {
-        return bufferedReader.read(buf, 0, len);
+        return bufferedReader.read(buf, i, len);
     }
 
     public void moveToEndOfLine() throws IOException {
         bufferedReader.readLine();
+    }
+
+    public void writeAndFlush(byte[] formatted) throws IOException {
+        outputStream.write(formatted);
+        outputStream.flush();
     }
 
 

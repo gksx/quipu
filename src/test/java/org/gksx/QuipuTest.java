@@ -5,24 +5,20 @@ package org.gksx;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.gksx.quipu.Quipu;
 import org.gksx.quipu.QuipuException;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
+public class QuipuTest 
 {
     @Test
     public void shouldBeFormmatted() {
 
         String[] args = {"get", "tja", "tjä"};
 
-        var bytesExpected = new String("*3\r\n$3\r\nget\r\n$3\r\ntja\r\n$3\r\ntjä\r\n").getBytes();
+        var bytesExpected = "*3\r\n$3\r\nget\r\n$3\r\ntja\r\n$3\r\ntjä\r\n".getBytes();
 
         var q = Quipu.commandBuilder(args);
 
@@ -34,7 +30,7 @@ public class AppTest
     @Test
     public void parser() {
 
-        var bytesToParse = new String("$10\r\nmylisthejs\r\n").getBytes();
+        var bytesToParse = "$10\r\nmylisthejs\r\n".getBytes();
 
         int len = 0;
 
@@ -48,24 +44,6 @@ public class AppTest
 
 
     @Test
-    public void lpush() throws IOException, QuipuException {
-
-        Quipu q = new Quipu();
-
-        var s = q.call("lrange", "mylist", "0", "-1");
-            
-        
-        var arry = Arrays.asList(s.split(";"));
-
-        for (String el : arry) {
-            System.out.println(el);
-        }
-
-        q.close();
-
-    }
-
-    @Test
     public void incr() throws IOException, QuipuException {
 
         Quipu q = new Quipu();
@@ -76,7 +54,7 @@ public class AppTest
 
         q.close();
 
-        Assert.assertEquals(11, Integer.parseInt(resp));
+        Assert.assertEquals(11, Integer.parseInt((String)resp));
     }
 
     @Test

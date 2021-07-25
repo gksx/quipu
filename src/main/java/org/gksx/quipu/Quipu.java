@@ -1,6 +1,8 @@
 package org.gksx.quipu;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Quipu {
 
@@ -30,11 +32,9 @@ public class Quipu {
         quipuStream = new QuipuStream(this.uri, this.port);                                                        
     }
 
-    public String call(String... args) throws IOException, QuipuException {
+    public Object call(String... args) throws IOException, QuipuException {
         var formatted = commandBuilder(args);
-        quipuStream.getOutputStream().write(formatted);
-        quipuStream.getOutputStream().flush();
-
+        quipuStream.writeAndFlush(formatted);
         return proccessReply();
     }
 
@@ -70,7 +70,7 @@ public class Quipu {
         return String.valueOf(buf);
     }
 
-    private String proccessReply() throws IOException, QuipuException {
+    private Object proccessReply() throws IOException, QuipuException {
         char prefix = quipuStream.read();
 
         switch (prefix){
@@ -99,17 +99,17 @@ public class Quipu {
         
     }
 
-    private String parseBulkArray() throws IOException, QuipuException {
-
+    private List<String> parseBulkArray() throws IOException, QuipuException {
         int elemnts = parse();
 
-        String reply = "";
+        List<String> list = new ArrayList<>();
 
+        
         for(var i = 0; i < elemnts; i++) {
-            reply = reply + ";" + proccessReply();
+            list.add((String)proccessReply());
         }
 
-        return reply;
+        return list;
     }
 
     public void close() throws IOException {
