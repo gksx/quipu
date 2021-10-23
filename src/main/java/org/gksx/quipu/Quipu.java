@@ -28,6 +28,10 @@ public class Quipu {
         openQuipuStream();
     }
 
+    public Quipu(QuipuStream quipuStream){
+        this.quipuStream = quipuStream;
+    }
+
     private void openQuipuStream() throws IOException {
         quipuStream = new QuipuStream(this.uri, this.port);                                                        
     }

@@ -48,5 +48,9 @@ public class QuipuStream {
         outputStream.flush();
     }
 
+    public boolean isOpen(){
+        return this.socket.isConnected();
+    }
+
 
 }

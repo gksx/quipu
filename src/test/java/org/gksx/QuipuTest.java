@@ -70,4 +70,19 @@ public class QuipuTest
         q.close();
 
     }
+
+    @Test
+    public void set_ä(){
+        try {
+            Quipu q = new Quipu();
+
+            q.call("set", "id:12", "hej");
+
+            String resp = (String)q.call("get", "id:12");
+            assertEquals("hej", resp);
+        } catch (IOException | QuipuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
