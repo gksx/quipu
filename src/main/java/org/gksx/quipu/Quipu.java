@@ -66,7 +66,7 @@ public class Quipu {
 
         if (len == 0) return null;
         
-        char[] buf = new char[len];
+        byte[] buf = new byte[len];
 
         
         quipuStream.readBuf(buf, 0, len);
@@ -87,14 +87,14 @@ public class Quipu {
                 return parseBulkArray();                
             }
             case PLUS_BYTE:{
-                return quipuStream.getBufferedReader().readLine();
+                return quipuStream.readLine();
             }
             case MINUS_BYTE:{
-                String errorMessage = quipuStream.getBufferedReader().readLine();
+                String errorMessage = new String(quipuStream.readLine());
                 throw new QuipuException(errorMessage);
             }
             case COLON_BYTE:{
-                return quipuStream.getBufferedReader().readLine();
+                return quipuStream.readLine();
             }
             default:
                 throw new QuipuException("somethin went wrong");
