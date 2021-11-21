@@ -1,5 +1,6 @@
 package org.gksx.quipu;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,6 +12,7 @@ public class QuipuStream {
     private InputStream inputStream;
     private Socket socket;
     private static final byte[] CARRIAGE_RETURN_LINE_FEED = {'\r', '\n'};
+
     public QuipuStream(String uri, int port) throws IOException {
         socket = new Socket(uri, port);
         outputStream = socket.getOutputStream();
@@ -45,29 +47,21 @@ public class QuipuStream {
     }
 
     public byte[] readLine() throws IOException{
-        var size = 1024;
-        var buf = new char[size];
-        var read = 0;
-
-        for (var i = 0; i < size; i++){
-            var next = inputStream.read();
+        var buf = new ByteArrayOutputStream();
+        int next = 0;
+        
+        while(next != -1) {
+            next = inputStream.read();
             if (next == CARRIAGE_RETURN_LINE_FEED[0]){
                 var s = inputStream.read();
                 if (s == CARRIAGE_RETURN_LINE_FEED[1]){
                     break;
                 }
             }
-            buf[i] = (char)next;
-            read++;
-        }
-    
-        var returnbuffer =  new byte[read];
-
-        for (var i = 0; i < read; i++) {
-            returnbuffer[i] = (byte)buf[i];
+            buf.write(next);
         }
 
-        return returnbuffer;
+        return buf.toByteArray();
     }
 
     public void writeAndFlush(byte[] formatted) throws IOException {

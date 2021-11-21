@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Quipu {
+public class Quipu implements Commands {
 
     private static final byte DOLLAR_BYTE = '$';
     private static final byte ASTERISK_BYTE = '*';
@@ -62,7 +62,7 @@ public class Quipu {
         return len;
     }
 
-    private String parseBulkString(int len) throws IOException, QuipuException{
+    private byte[] parseBulkString(int len) throws IOException, QuipuException{
 
         if (len == 0) return null;
         
@@ -71,7 +71,7 @@ public class Quipu {
         
         quipuStream.readBuf(buf, 0, len);
         quipuStream.moveToEndOfLine();
-        return String.valueOf(buf);
+        return buf;
     }
 
     private Object proccessReply() throws IOException, QuipuException {
@@ -81,7 +81,7 @@ public class Quipu {
             case DOLLAR_BYTE:{
                 int len = parse();
                 var q = parseBulkString(len);
-                return q == null ? null : q.toString();
+                return q;
             }
             case ASTERISK_BYTE:{
                 return parseBulkArray();                
@@ -108,9 +108,8 @@ public class Quipu {
 
         List<String> list = new ArrayList<>();
 
-        
         for(var i = 0; i < elemnts; i++) {
-            list.add((String)proccessReply());
+            list.add(new String((byte[])proccessReply()));
         }
 
         return list;
@@ -131,5 +130,22 @@ public class Quipu {
         }
 
         return sb.toString().getBytes();
+    }
+
+    @Override
+    public String get(String key) throws IOException, QuipuException {
+        var resp = (byte[])call(GET, key);
+        return new String(resp);
+    }
+
+    @Override
+    public void set(String key, String value) throws IOException, QuipuException {
+        call(SET, key, value);
+    }
+
+    @Override
+    public Long incr(String key) throws IOException, QuipuException {
+        byte[] resp = (byte[])call(INCR, key);
+        return Long.valueOf(new String(resp));
     }
 }

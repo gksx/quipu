@@ -48,14 +48,16 @@ public class QuipuTest
 
         Quipu q = new Quipu();
 
-        q.call("set", "mykey", "10");
+        Long expected = 11L;
 
-        var resp = (byte[])q.call("incr", "mykey");
-        System.out.println(new String(resp));
+        q.set("mykey", "10");
 
+        Long actual = q.incr("mykey");
+        
+        Assert.assertEquals(expected, actual);
         q.close();
 
-        // Assert.assertEquals(11, Integer.parseInt((String)resp));
+        
     }
 
     @Test
@@ -63,27 +65,13 @@ public class QuipuTest
 
         Quipu q = new Quipu();
 
-        q.call("set", "hej", "tja");
+        q.set("hej", "tja");
 
-        var resp = q.call("get", "hej");
+        var resp = q.get("hej");
         assertEquals("tja", resp);
 
         q.close();
 
     }
 
-    @Test
-    public void set_ä(){
-        try {
-            Quipu q = new Quipu();
-
-            q.call("set", "id:12", "hej");
-
-            String resp = (String)q.call("get", "id:12");
-            assertEquals("hej", resp);
-        } catch (IOException | QuipuException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 }
