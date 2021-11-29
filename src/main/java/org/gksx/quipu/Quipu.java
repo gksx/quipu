@@ -12,7 +12,7 @@ public class Quipu implements Commands {
     private static final byte MINUS_BYTE = '-';
     private static final byte COLON_BYTE = ':';   
     private static final char CARRIAGE_RETURN = '\r';
-    private static final String CARRIAGE_RETURN_LINE_FEED = "\r\n";
+    
     private String uri = "127.0.0.1";
     private int port = 6379;
 
@@ -21,23 +21,23 @@ public class Quipu implements Commands {
     public Quipu(String uri, int port) throws IOException {
         this.uri = uri;
         this.port = port;
-        openQuipuStream();
+        connect();
     }
 
     public Quipu() throws IOException {
-        openQuipuStream();
+        connect();
     }
 
     public Quipu(QuipuStream quipuStream){
         this.quipuStream = quipuStream;
     }
 
-    private void openQuipuStream() throws IOException {
+    private void connect() throws IOException {
         quipuStream = new QuipuStream(this.uri, this.port);                                                        
     }
 
     private Object callRaw(String... args) throws IOException, QuipuException {
-        var formatted = commandBuilder(args);
+        var formatted = CommandFactory.build(args);
         quipuStream.writeAndFlush(formatted);
         return proccessReply();
     }
@@ -124,18 +124,7 @@ public class Quipu implements Commands {
         quipuStream.close();
     }
 
-    public static byte[] commandBuilder(String... args){
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("*%d%s", args.length, CARRIAGE_RETURN_LINE_FEED));
-
-        for (String arg : args) {
-            sb.append(String.format("$%d%s", arg.length(), CARRIAGE_RETURN_LINE_FEED));
-            sb.append(String.format("%s%s", arg, CARRIAGE_RETURN_LINE_FEED));
-        }
-
-        return sb.toString().getBytes();
-    }
 
     @Override
     public String get(String key) throws IOException, QuipuException {

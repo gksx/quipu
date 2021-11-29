@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import org.gksx.quipu.CommandFactory;
 import org.gksx.quipu.Quipu;
 import org.gksx.quipu.QuipuException;
 import org.junit.After;
@@ -17,6 +18,7 @@ import org.junit.Test;
 public class CommandsTest 
 {
     Quipu quipu;
+
     @Before
     public void createConnection() throws IOException{
         quipu = new Quipu();
@@ -35,10 +37,10 @@ public class CommandsTest
 
         var bytesExpected = "*3\r\n$3\r\nget\r\n$3\r\ntja\r\n$3\r\ntjä\r\n".getBytes();
 
-        var quipu = Quipu.commandBuilder(args);
+        var command = CommandFactory.build(args);
 
-        for (int i = 0; i < quipu.length; i++) {
-            Assert.assertEquals(bytesExpected[i], quipu[i]);
+        for (int i = 0; i < command.length; i++) {
+            Assert.assertEquals(bytesExpected[i], command[i]);
         }
     }
 

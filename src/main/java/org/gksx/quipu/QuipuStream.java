@@ -19,11 +19,11 @@ public class QuipuStream {
         inputStream = socket.getInputStream();   
     }
 
-    public char read() throws IOException{
+    public char read() throws IOException {
         return (char) inputStream.read();
     }
 
-    public void close() throws IOException{
+    public void close() throws IOException { 
         outputStream.close();
         inputStream.close();
         socket.close();
