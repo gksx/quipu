@@ -3,16 +3,31 @@ package org.gksx;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.gksx.quipu.Quipu;
 import org.gksx.quipu.QuipuException;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-public class QuipuTest 
+public class CommandsTest 
 {
+    Quipu quipu;
+    @Before
+    public void createConnection() throws IOException{
+        quipu = new Quipu();
+    }
+
+
+    @After
+    public void closeConnection() throws IOException{
+        quipu.close();
+    }
+
     @Test
     public void shouldBeFormmatted() {
 
@@ -20,10 +35,10 @@ public class QuipuTest
 
         var bytesExpected = "*3\r\n$3\r\nget\r\n$3\r\ntja\r\n$3\r\ntjä\r\n".getBytes();
 
-        var q = Quipu.commandBuilder(args);
+        var quipu = Quipu.commandBuilder(args);
 
-        for (int i = 0; i < q.length; i++) {
-            Assert.assertEquals(bytesExpected[i], q[i]);
+        for (int i = 0; i < quipu.length; i++) {
+            Assert.assertEquals(bytesExpected[i], quipu[i]);
         }
     }
 
@@ -45,33 +60,29 @@ public class QuipuTest
 
     @Test
     public void incr() throws IOException, QuipuException {
-
-        Quipu q = new Quipu();
-
         Long expected = 11L;
 
-        q.set("mykey", "10");
+        quipu.set("mykey", "10");
 
-        Long actual = q.incr("mykey");
+        Long actual = quipu.incr("mykey");
         
-        Assert.assertEquals(expected, actual);
-        q.close();
-
-        
+        Assert.assertEquals(expected, actual);        
     }
 
     @Test
     public void set_and_get() throws IOException, QuipuException {
+        quipu.set("hej", "tja");
 
-        Quipu q = new Quipu();
-
-        q.set("hej", "tja");
-
-        var resp = q.get("hej");
+        var resp = quipu.get("hej");
         assertEquals("tja", resp);
-
-        q.close();
-
     }
 
+    @Test
+    public void setex_and_ttl() throws IOException, QuipuException{
+        quipu.setEx("mykey", 10L,"value");
+
+        Long ttl = quipu.ttl("mykey");
+
+        assertTrue(ttl <= 10);
+    }
 }

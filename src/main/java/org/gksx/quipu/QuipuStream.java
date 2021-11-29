@@ -20,7 +20,7 @@ public class QuipuStream {
     }
 
     public char read() throws IOException{
-        return(char) inputStream.read();
+        return (char) inputStream.read();
     }
 
     public void close() throws IOException{
@@ -30,7 +30,6 @@ public class QuipuStream {
     }
 
     public int readBuf(byte[] buf, int i, int len) throws IOException {
-    
         return inputStream.read(buf, i, len);
     }
 

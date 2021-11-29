@@ -36,10 +36,15 @@ public class Quipu implements Commands {
         quipuStream = new QuipuStream(this.uri, this.port);                                                        
     }
 
-    public Object call(String... args) throws IOException, QuipuException {
+    private Object callRaw(String... args) throws IOException, QuipuException {
         var formatted = commandBuilder(args);
         quipuStream.writeAndFlush(formatted);
         return proccessReply();
+    }
+    
+    public String call(String... args) throws IOException, QuipuException{
+        var resp = (byte[])callRaw(args);
+        return new String(resp);
     }
 
     public int parse() throws IOException, QuipuException{
@@ -134,18 +139,33 @@ public class Quipu implements Commands {
 
     @Override
     public String get(String key) throws IOException, QuipuException {
-        var resp = (byte[])call(GET, key);
+        var resp = (byte[])callRaw(GET, key);
         return new String(resp);
     }
 
     @Override
     public void set(String key, String value) throws IOException, QuipuException {
-        call(SET, key, value);
+        callRaw(SET, key, value);
     }
 
     @Override
     public Long incr(String key) throws IOException, QuipuException {
-        byte[] resp = (byte[])call(INCR, key);
-        return Long.valueOf(new String(resp));
+        byte[] resp = (byte[])callRaw(INCR, key);
+        return toLong(resp);
+    }
+
+    @Override
+    public void setEx(String key, Long seconds, String value) throws IOException, QuipuException {
+        callRaw(SETEX, key, seconds.toString(), value);
+    }
+
+    @Override
+    public Long ttl(String key) throws IOException, QuipuException {
+        byte[] resp = (byte[])callRaw(TTL, key);
+        return toLong(resp);
+    }
+
+    private Long toLong(byte[] data){
+        return Long.valueOf(new String(data));
     }
 }
