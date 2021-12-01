@@ -1,8 +1,7 @@
 package org.gksx;
 
-
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -86,5 +85,23 @@ public class CommandsTest
         Long ttl = quipu.ttl("mykey");
 
         assertTrue(ttl <= 10);
+    }
+
+    @Test
+    public void set_and_incrBy() throws IOException, QuipuException{
+        Long expected = 15L;
+        Long value = 10L;
+        quipu.set("incrby", value);
+
+        Long actual = quipu.incrBy("incrby", 5L);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void get_nonExisting() throws IOException, QuipuException{
+        String nullExpected = quipu.get("nonexisting");
+
+        assertNull(nullExpected);
     }
 }

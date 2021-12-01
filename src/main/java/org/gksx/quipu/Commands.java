@@ -7,9 +7,10 @@ public interface Commands {
     static final String GET = "GET";
     static final String SET = "SET";
     static final String INCR = "INCR";
+    static final String INCRBY = "INCRBY";
     static final String SETEX = "SETEX";
     static final String TTL = "TTL";
-    
+
 
     /***
      * 
@@ -28,6 +29,8 @@ public interface Commands {
      */
     void set(String key, String value) throws IOException, QuipuException;
 
+    void set(String key, Long value) throws IOException, QuipuException;
+
     void setEx(String key, Long seconds, String value) throws IOException, QuipuException;
     
     /**
@@ -38,6 +41,8 @@ public interface Commands {
      * @throws QuipuException
      */
     Long incr(String key) throws IOException, QuipuException;
+
+    Long incrBy(String key, Long value) throws IOException, QuipuException;
 
     Long ttl(String key) throws IOException, QuipuException;
 }

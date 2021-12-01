@@ -12,6 +12,7 @@ public class Quipu implements Commands {
     private static final byte MINUS_BYTE = '-';
     private static final byte COLON_BYTE = ':';   
     private static final char CARRIAGE_RETURN = '\r';
+    private static final int NILVALUE = -1;
     
     private String uri = "127.0.0.1";
     private int port = 6379;
@@ -43,8 +44,8 @@ public class Quipu implements Commands {
     }
     
     public String call(String... args) throws IOException, QuipuException{
-        var resp = (byte[])callRaw(args);
-        return new String(resp);
+        var resp = callRawByteArray(args);
+        return toString(resp);
     }
 
     public int parse() throws IOException, QuipuException{
@@ -56,7 +57,7 @@ public class Quipu implements Commands {
             
             if (p == '-'){
                 quipuStream.moveToEndOfLine();
-                return 0;
+                return NILVALUE;
             }
 
             len = (len*10) + (p - '0');
@@ -85,6 +86,8 @@ public class Quipu implements Commands {
         switch (prefix){
             case DOLLAR_BYTE:{
                 int len = parse();
+                if (len == NILVALUE)
+                    return null;
                 var q = parseBulkString(len);
                 return q;
             }
@@ -123,13 +126,30 @@ public class Quipu implements Commands {
     public void close() throws IOException {
         quipuStream.close();
     }
+    
+    private Long toLong(byte[] data){
+        if (data == null)
+            return null;
+        return Long.valueOf(new String(data));
+    }
 
+    private String toString(byte[] data){
+        if (data == null)
+            return null;
+        return new String(data);
+    }
 
+    private byte[] callRawByteArray(String... args) throws IOException, QuipuException{
+        Object returnObject = callRaw(args);
+        if (returnObject == null)
+            return null;
+        return (byte[])returnObject;
+    }
 
     @Override
     public String get(String key) throws IOException, QuipuException {
-        var resp = (byte[])callRaw(GET, key);
-        return new String(resp);
+        byte[] response = callRawByteArray(GET, key);
+        return toString(response);
     }
 
     @Override
@@ -139,7 +159,7 @@ public class Quipu implements Commands {
 
     @Override
     public Long incr(String key) throws IOException, QuipuException {
-        byte[] resp = (byte[])callRaw(INCR, key);
+        byte[] resp = callRawByteArray(INCR, key);
         return toLong(resp);
     }
 
@@ -154,7 +174,13 @@ public class Quipu implements Commands {
         return toLong(resp);
     }
 
-    private Long toLong(byte[] data){
-        return Long.valueOf(new String(data));
+    @Override
+    public Long incrBy(String key, Long value) throws IOException, QuipuException {
+        return toLong(callRawByteArray(INCRBY, key, value.toString()));
+    }
+
+    @Override
+    public void set(String key, Long value) throws IOException, QuipuException {
+        set(key, value.toString());
     }
 }
