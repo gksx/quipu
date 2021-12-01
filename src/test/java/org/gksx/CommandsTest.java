@@ -23,7 +23,6 @@ public class CommandsTest
         quipu = new Quipu();
     }
 
-
     @After
     public void closeConnection() throws IOException{
         quipu.close();

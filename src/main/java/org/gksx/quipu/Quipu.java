@@ -73,7 +73,6 @@ public class Quipu implements Commands {
         if (len == 0) return null;
         
         byte[] buf = new byte[len];
-
         
         quipuStream.readBuf(buf, 0, len);
         quipuStream.moveToEndOfLine();
@@ -106,9 +105,7 @@ public class Quipu implements Commands {
             }
             default:
                 throw new QuipuException("somethin went wrong");
-
-        }          
-        
+        }                  
     }
 
     private List<String> parseBulkArray() throws IOException, QuipuException {
@@ -126,7 +123,7 @@ public class Quipu implements Commands {
     public void close() throws IOException {
         quipuStream.close();
     }
-    
+
     private Long toLong(byte[] data){
         if (data == null)
             return null;
@@ -176,7 +173,8 @@ public class Quipu implements Commands {
 
     @Override
     public Long incrBy(String key, Long value) throws IOException, QuipuException {
-        return toLong(callRawByteArray(INCRBY, key, value.toString()));
+        byte[] resp = callRawByteArray(INCRBY, key, value.toString());
+        return toLong(resp);
     }
 
     @Override
