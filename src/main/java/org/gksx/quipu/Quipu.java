@@ -3,6 +3,8 @@ package org.gksx.quipu;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Quipu implements Commands {
 
@@ -204,5 +206,24 @@ public class Quipu implements Commands {
     public String getDel(String key) throws IOException, QuipuException {
         byte[] resp = callRawByteArray(GETDEL, key);
         return toString(resp);
+    }
+
+    @Override
+    public Long hset(String key, Map<String, String> map) throws IOException, QuipuException {
+        List<String> list = new ArrayList<>();
+        
+        list.add(HSET);
+        list.add(key);
+
+        for (Map.Entry<String, String> entry : map.entrySet()){
+            list.add(entry.getKey());
+            list.add(entry.getValue());
+        }
+        
+        String[] array = list.stream().toArray(String[] ::new);
+
+        byte[] resp = callRawByteArray(array);
+        
+        return toLong(resp);
     }
 }

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gksx.quipu.CommandFactory;
 import org.gksx.quipu.Quipu;
@@ -116,6 +118,13 @@ public class CommandsTest
         assertEquals(expected1, resp);
         Long resp2 = quipu.append("append", " world");
         assertEquals(expected2, resp2);
+    }
 
+    @Test
+    public void hset() throws IOException, QuipuException{
+        Map<String, String> map = new HashMap<>();
+
+        map.put("hello", "world");
+        quipu.hset("mymap", map);
     }
 }

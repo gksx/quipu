@@ -1,6 +1,7 @@
 package org.gksx.quipu;
 
 import java.io.IOException;
+import java.util.Map;
 
 public interface Commands {
 
@@ -13,6 +14,7 @@ public interface Commands {
     static final String APPEND ="APPEND";
     static final String DEL = "DEL";
     static final String GETDEL = "GETDEL";
+    static final String HSET = "HSET";
 
 
     /***
@@ -54,4 +56,6 @@ public interface Commands {
     Long del(String key) throws IOException, QuipuException;
 
     String getDel(String key) throws IOException, QuipuException;
+
+    Long hset(String key, Map<String, String> map) throws IOException, QuipuException;
 }
