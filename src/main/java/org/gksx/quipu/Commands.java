@@ -10,6 +10,9 @@ public interface Commands {
     static final String INCRBY = "INCRBY";
     static final String SETEX = "SETEX";
     static final String TTL = "TTL";
+    static final String APPEND ="APPEND";
+    static final String DEL = "DEL";
+    static final String GETDEL = "GETDEL";
 
 
     /***
@@ -45,4 +48,10 @@ public interface Commands {
     Long incrBy(String key, Long value) throws IOException, QuipuException;
 
     Long ttl(String key) throws IOException, QuipuException;
+
+    Long append(String key, String value) throws IOException, QuipuException;
+
+    Long del(String key) throws IOException, QuipuException;
+
+    String getDel(String key) throws IOException, QuipuException;
 }

@@ -1,5 +1,6 @@
 package org.gksx.quipu;
 
-public class Configuration {
-    
+public interface Configuration {
+    int getPort();
+    String getUri();
 }

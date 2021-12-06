@@ -17,7 +17,6 @@ public class ConnectionPoolTest {
 
             Assert.assertTrue(pool.getConnection().isOpen());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

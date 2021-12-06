@@ -29,6 +29,12 @@ public class Quipu implements Commands {
         connect();
     }
 
+    public Quipu(Configuration configuration) throws IOException{
+        this.port = configuration.getPort();
+        this.uri = configuration.getUri();
+        connect();
+    }
+
     public Quipu(QuipuStream quipuStream){
         this.quipuStream = quipuStream;
     }
@@ -180,5 +186,23 @@ public class Quipu implements Commands {
     @Override
     public void set(String key, Long value) throws IOException, QuipuException {
         set(key, value.toString());
+    }
+
+    @Override
+    public Long append(String key, String value) throws IOException, QuipuException {
+        byte[] resp = callRawByteArray(APPEND, key, value);
+        return toLong(resp);
+    }
+
+    @Override
+    public Long del(String key) throws IOException, QuipuException {
+        byte[] resp = callRawByteArray(DEL, key);
+        return toLong(resp);
+    }
+
+    @Override
+    public String getDel(String key) throws IOException, QuipuException {
+        byte[] resp = callRawByteArray(GETDEL, key);
+        return toString(resp);
     }
 }

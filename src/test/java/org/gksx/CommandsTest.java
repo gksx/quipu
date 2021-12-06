@@ -103,4 +103,19 @@ public class CommandsTest
 
         assertNull(nullExpected);
     }
+
+    @Test 
+    public void del_and_append() throws IOException, QuipuException {
+        Long expected1 = 5L;
+        Long expected2 = 11L;
+
+        quipu.del("append");
+        
+        Long resp = quipu.append("append", "hello");
+
+        assertEquals(expected1, resp);
+        Long resp2 = quipu.append("append", " world");
+        assertEquals(expected2, resp2);
+
+    }
 }
