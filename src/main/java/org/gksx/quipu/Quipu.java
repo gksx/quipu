@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.gksx.quipu.PubSub.OnEvent;
+import org.gksx.quipu.PubSub.PubSubQuipu;
+
 public class Quipu extends PubSubQuipu implements Commands {
 
     private static final byte DOLLAR_BYTE = '$';

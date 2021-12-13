@@ -1,4 +1,4 @@
-package org.gksx.quipu;
+package org.gksx.quipu.PubSub;
 
 @FunctionalInterface
 public interface OnEvent {

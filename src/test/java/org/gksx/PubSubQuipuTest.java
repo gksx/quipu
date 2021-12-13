@@ -2,9 +2,9 @@ package org.gksx;
 
 import java.io.IOException;
 
-import org.gksx.quipu.PubSubQuipu;
 import org.gksx.quipu.Quipu;
 import org.gksx.quipu.QuipuException;
+import org.gksx.quipu.PubSub.PubSubQuipu;
 import org.junit.Test;
 
 public class PubSubQuipuTest {
