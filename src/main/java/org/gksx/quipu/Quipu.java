@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Quipu implements Commands {
+public class Quipu extends PubSubQuipu implements Commands {
 
     private static final byte DOLLAR_BYTE = '$';
     private static final byte ASTERISK_BYTE = '*';
@@ -38,6 +38,9 @@ public class Quipu implements Commands {
 
     public Quipu(QuipuStream quipuStream){
         this.quipuStream = quipuStream;
+    }
+
+    public Quipu(String channel) {
     }
 
     private void connect() throws IOException {
@@ -224,5 +227,26 @@ public class Quipu implements Commands {
         byte[] resp = callRawByteArray(array);
         
         return toLong(resp);
+    }
+
+    @Override
+    public PubSubQuipu subscribe(String channel) throws IOException, QuipuException {
+        var quipu = new Quipu();
+        quipu.callRawByteArray(SUBSCRIBE, channel);
+        return quipu;
+    }
+
+    @Override
+    public void onEvent(OnEvent onEvent) {
+        while(quipuStream.isOpen()){
+            byte[] bytes;
+            try {
+                bytes = quipuStream.readLine();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+        }
     }
 }

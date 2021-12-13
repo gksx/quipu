@@ -15,6 +15,8 @@ public interface Commands {
     static final String DEL = "DEL";
     static final String GETDEL = "GETDEL";
     static final String HSET = "HSET";
+    static final String SUBSCRIBE = "SUBSCRIBE";
+    static final String UNSUBSCRIBE = "UNSUBSCRIBE";
 
 
     /***
