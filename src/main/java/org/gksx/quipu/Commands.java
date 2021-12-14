@@ -18,7 +18,6 @@ public interface Commands {
     static final String SUBSCRIBE = "SUBSCRIBE";
     static final String UNSUBSCRIBE = "UNSUBSCRIBE";
 
-
     /***
      * 
      * @param key
@@ -26,7 +25,7 @@ public interface Commands {
      * @throws IOException
      * @throws QuipuException
      */
-    String get(String key) throws IOException, QuipuException;
+    String get(String key);
     /**
      * 
      * @param key
@@ -34,11 +33,22 @@ public interface Commands {
      * @throws IOException
      * @throws QuipuException
      */
-    void set(String key, String value) throws IOException, QuipuException;
+    void set(String key, String value);
+    
+    /**
+     * 
+     * @param key
+     * @param value
+     */
+    void set(String key, Long value);
 
-    void set(String key, Long value) throws IOException, QuipuException;
-
-    void setEx(String key, Long seconds, String value) throws IOException, QuipuException;
+    /**
+     * 
+     * @param key
+     * @param seconds
+     * @param value
+     */
+    void setEx(String key, Long seconds, String value);
     
     /**
      * awefawe f
@@ -47,17 +57,50 @@ public interface Commands {
      * @throws IOException
      * @throws QuipuException
      */
-    Long incr(String key) throws IOException, QuipuException;
+    Long incr(String key);
 
-    Long incrBy(String key, Long value) throws IOException, QuipuException;
+    /**
+     * 
+     * @param key
+     * @param value
+     * @return
+     */
+    Long incrBy(String key, Long value);
 
-    Long ttl(String key) throws IOException, QuipuException;
+    /**
+     * 
+     * @param key
+     * @return
+     */
+    Long ttl(String key);
 
-    Long append(String key, String value) throws IOException, QuipuException;
+    /**
+     * 
+     * @param key
+     * @param value
+     * @return
+     */
+    Long append(String key, String value);
 
-    Long del(String key) throws IOException, QuipuException;
+    /**
+     * 
+     * @param key
+     * @return
+     */
+    Long del(String key);
 
-    String getDel(String key) throws IOException, QuipuException;
+    /**
+     * 
+     * @param key
+     * @return
+     */
+    String getDel(String key);
 
-    Long hset(String key, Map<String, String> map) throws IOException, QuipuException;
+    /**
+     * 
+     * @param key
+     * @param map
+     * @return
+     */
+    Long hset(String key, Map<String, String> map);
 }

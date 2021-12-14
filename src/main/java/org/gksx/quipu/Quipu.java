@@ -1,6 +1,5 @@
 package org.gksx.quipu;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,47 +20,47 @@ public class Quipu extends PubSubQuipu implements Commands {
     private String uri = "127.0.0.1";
     private int port = 6379;
 
-    private QuipuStream quipuStream;
+    private Connection quipuStream;
 
-    public Quipu(String uri, int port) throws IOException {
+    public Quipu(String uri, int port)  {
         this.uri = uri;
         this.port = port;
         connect();
     }
 
-    public Quipu() throws IOException {
+    public Quipu()  {
         connect();
     }
 
-    public Quipu(Configuration configuration) throws IOException{
+    public Quipu(Configuration configuration) {
         this.port = configuration.getPort();
         this.uri = configuration.getUri();
         connect();
     }
 
-    public Quipu(QuipuStream quipuStream){
+    public Quipu(Connection quipuStream){
         this.quipuStream = quipuStream;
     }
 
     public Quipu(String channel) {
     }
 
-    private void connect() throws IOException {
-        quipuStream = new QuipuStream(this.uri, this.port);                                                        
+    private void connect()  {
+        quipuStream = new Connection(this.uri, this.port);                                                        
     }
 
-    private Object callRaw(String... args) throws IOException, QuipuException {
+    private Object callRaw(String... args) {
         var formatted = CommandFactory.build(args);
         quipuStream.writeAndFlush(formatted);
         return proccessReply();
     }
     
-    public String call(String... args) throws IOException, QuipuException{
+    public String call(String... args){
         var resp = callRawByteArray(args);
         return toString(resp);
     }
 
-    public int parse() throws IOException, QuipuException{
+    public int parse(){
         int len = 0;
 
         char p = quipuStream.read();
@@ -81,7 +80,7 @@ public class Quipu extends PubSubQuipu implements Commands {
         return len;
     }
 
-    private byte[] parseBulkString(int len) throws IOException, QuipuException{
+    private byte[] parseBulkString(int len){
 
         if (len == 0) return null;
         
@@ -92,7 +91,7 @@ public class Quipu extends PubSubQuipu implements Commands {
         return buf;
     }
 
-    private Object proccessReply() throws IOException, QuipuException {
+    private Object proccessReply() {
         char prefix = quipuStream.read();
 
         switch (prefix){
@@ -121,7 +120,7 @@ public class Quipu extends PubSubQuipu implements Commands {
         }                  
     }
 
-    private List<String> parseBulkArray() throws IOException, QuipuException {
+    private List<String> parseBulkArray() {
         int elemnts = parse();
 
         List<String> list = new ArrayList<>();
@@ -133,7 +132,7 @@ public class Quipu extends PubSubQuipu implements Commands {
         return list;
     }
 
-    public void close() throws IOException {
+    public void close()  {
         quipuStream.close();
     }
 
@@ -149,7 +148,7 @@ public class Quipu extends PubSubQuipu implements Commands {
         return new String(data);
     }
 
-    private byte[] callRawByteArray(String... args) throws IOException, QuipuException{
+    private byte[] callRawByteArray(String... args){
         Object returnObject = callRaw(args);
         if (returnObject == null)
             return null;
@@ -157,64 +156,64 @@ public class Quipu extends PubSubQuipu implements Commands {
     }
 
     @Override
-    public String get(String key) throws IOException, QuipuException {
+    public String get(String key) {
         byte[] response = callRawByteArray(GET, key);
         return toString(response);
     }
 
     @Override
-    public void set(String key, String value) throws IOException, QuipuException {
+    public void set(String key, String value) {
         callRaw(SET, key, value);
     }
 
     @Override
-    public Long incr(String key) throws IOException, QuipuException {
+    public Long incr(String key) {
         byte[] resp = callRawByteArray(INCR, key);
         return toLong(resp);
     }
 
     @Override
-    public void setEx(String key, Long seconds, String value) throws IOException, QuipuException {
+    public void setEx(String key, Long seconds, String value) {
         callRaw(SETEX, key, seconds.toString(), value);
     }
 
     @Override
-    public Long ttl(String key) throws IOException, QuipuException {
+    public Long ttl(String key) {
         byte[] resp = (byte[])callRaw(TTL, key);
         return toLong(resp);
     }
 
     @Override
-    public Long incrBy(String key, Long value) throws IOException, QuipuException {
+    public Long incrBy(String key, Long value) {
         byte[] resp = callRawByteArray(INCRBY, key, value.toString());
         return toLong(resp);
     }
 
     @Override
-    public void set(String key, Long value) throws IOException, QuipuException {
+    public void set(String key, Long value) {
         set(key, value.toString());
     }
 
     @Override
-    public Long append(String key, String value) throws IOException, QuipuException {
+    public Long append(String key, String value) {
         byte[] resp = callRawByteArray(APPEND, key, value);
         return toLong(resp);
     }
 
     @Override
-    public Long del(String key) throws IOException, QuipuException {
+    public Long del(String key) {
         byte[] resp = callRawByteArray(DEL, key);
         return toLong(resp);
     }
 
     @Override
-    public String getDel(String key) throws IOException, QuipuException {
+    public String getDel(String key) {
         byte[] resp = callRawByteArray(GETDEL, key);
         return toString(resp);
     }
 
     @Override
-    public Long hset(String key, Map<String, String> map) throws IOException, QuipuException {
+    public Long hset(String key, Map<String, String> map) {
         List<String> list = new ArrayList<>();
         
         list.add(HSET);
@@ -233,7 +232,7 @@ public class Quipu extends PubSubQuipu implements Commands {
     }
 
     @Override
-    public PubSubQuipu subscribe(String channel) throws IOException, QuipuException {
+    public PubSubQuipu subscribe(String channel)  {
         var quipu = new Quipu();
         quipu.callRawByteArray(SUBSCRIBE, channel);
         return quipu;
@@ -242,14 +241,8 @@ public class Quipu extends PubSubQuipu implements Commands {
     @Override
     public void onEvent(OnEvent onEvent) {
         while(quipuStream.isOpen()){
-            byte[] bytes;
-            try {
-                bytes = quipuStream.readLine();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
+            byte[] bytes = quipuStream.readLine();
+            onEvent.perform(toString(bytes));
         }
     }
 }

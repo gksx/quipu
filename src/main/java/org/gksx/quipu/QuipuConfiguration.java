@@ -20,9 +20,10 @@ public class QuipuConfiguration implements Configuration {
         return this.uri;
     }
 
-    public static class Builder{
+    public static class Builder {
         private QuipuConfiguration configuration;
-        private Builder(){
+        
+        private Builder() {
             configuration = new QuipuConfiguration();
         }
 
