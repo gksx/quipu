@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.gksx.quipu.PubSub.OnEvent;
-import org.gksx.quipu.PubSub.PubSubQuipu;
-
 public class Quipu extends PubSubQuipu implements Commands {
 
     private static final byte DOLLAR_BYTE = '$';
@@ -20,7 +17,7 @@ public class Quipu extends PubSubQuipu implements Commands {
     private String uri = "127.0.0.1";
     private int port = 6379;
 
-    private Connection quipuStream;
+    private Connection connection;
 
     public Quipu(String uri, int port)  {
         this.uri = uri;
@@ -39,19 +36,19 @@ public class Quipu extends PubSubQuipu implements Commands {
     }
 
     public Quipu(Connection quipuStream){
-        this.quipuStream = quipuStream;
+        this.connection = quipuStream;
     }
 
     public Quipu(String channel) {
     }
 
     private void connect()  {
-        quipuStream = new Connection(this.uri, this.port);                                                        
+        connection = new Connection(this.uri, this.port);                                                        
     }
 
     private Object callRaw(String... args) {
         var formatted = CommandFactory.build(args);
-        quipuStream.writeAndFlush(formatted);
+        connection.writeAndFlush(formatted);
         return proccessReply();
     }
     
@@ -63,19 +60,19 @@ public class Quipu extends PubSubQuipu implements Commands {
     public int parse(){
         int len = 0;
 
-        char p = quipuStream.read();
+        char p = connection.read();
 
         while (p != CARRIAGE_RETURN){
             
             if (p == '-'){
-                quipuStream.moveToEndOfLine();
+                connection.moveToEndOfLine();
                 return NILVALUE;
             }
 
             len = (len*10) + (p - '0');
-            p = quipuStream.read();
+            p = connection.read();
         }
-        quipuStream.read();
+        connection.read();
         
         return len;
     }
@@ -86,13 +83,13 @@ public class Quipu extends PubSubQuipu implements Commands {
         
         byte[] buf = new byte[len];
         
-        quipuStream.readBuf(buf, 0, len);
-        quipuStream.moveToEndOfLine();
+        connection.readBuf(buf, 0, len);
+        connection.moveToEndOfLine();
         return buf;
     }
 
     private Object proccessReply() {
-        char prefix = quipuStream.read();
+        char prefix = connection.read();
 
         switch (prefix){
             case DOLLAR_BYTE:{
@@ -106,34 +103,35 @@ public class Quipu extends PubSubQuipu implements Commands {
                 return parseBulkArray();                
             }
             case PLUS_BYTE:{
-                return quipuStream.readLine();
+                return connection.readLine();
             }
             case MINUS_BYTE:{
-                String errorMessage = new String(quipuStream.readLine());
+                String errorMessage = new String(connection.readLine());
                 throw new QuipuException(errorMessage);
             }
             case COLON_BYTE:{
-                return quipuStream.readLine();
+                return connection.readLine();
             }
             default:
                 throw new QuipuException("somethin went wrong");
         }                  
     }
 
-    private List<String> parseBulkArray() {
+    private String[] parseBulkArray() {
         int elemnts = parse();
 
-        List<String> list = new ArrayList<>();
+        String[] list = new String[elemnts];
 
         for(var i = 0; i < elemnts; i++) {
-            list.add(new String((byte[])proccessReply()));
+            list[i] = new String((byte[])proccessReply());
         }
 
         return list;
     }
 
+    @Override
     public void close()  {
-        quipuStream.close();
+        connection.close();
     }
 
     private Long toLong(byte[] data){
@@ -153,6 +151,14 @@ public class Quipu extends PubSubQuipu implements Commands {
         if (returnObject == null)
             return null;
         return (byte[])returnObject;
+    }
+
+    private String[] callRawExpectList(String... args){
+
+        Object rObject = callRaw(args);
+        if (rObject == null)
+            return null;
+        return (String[])rObject;
     }
 
     @Override
@@ -224,25 +230,38 @@ public class Quipu extends PubSubQuipu implements Commands {
             list.add(entry.getValue());
         }
         
-        String[] array = list.stream().toArray(String[] ::new);
+        String[] commandArray = list.stream().toArray(String[] ::new);
 
-        byte[] resp = callRawByteArray(array);
+        byte[] resp = callRawByteArray(commandArray);
         
         return toLong(resp);
     }
 
     @Override
     public PubSubQuipu subscribe(String channel)  {
-        var quipu = new Quipu();
-        quipu.callRawByteArray(SUBSCRIBE, channel);
-        return quipu;
+        String[] resp = callRawExpectList(SUBSCRIBE, channel);
+        setChannel(resp[1]);
+        return this;
+    }
+
+    public static PubSubQuipu pubsub(){
+        return new Quipu();
+    }
+
+    public static PubSubQuipu pubsub(Configuration configuration){
+        return new Quipu(configuration);
     }
 
     @Override
-    public void onEvent(OnEvent onEvent) {
-        while(quipuStream.isOpen()){
-            byte[] bytes = quipuStream.readLine();
-            onEvent.perform(toString(bytes));
+    public void listen(OnEvent onEvent) {
+        while(true) {
+            Object resp = proccessReply();
+            if (resp instanceof String[]) {
+                String[] bulkArray = (String[]) resp;
+                if (isEventFromCurrentChannel(bulkArray[1])) {
+                    onEvent.perform(bulkArray[2]);
+                }
+            }
         }
     }
 }

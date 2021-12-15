@@ -2,20 +2,19 @@ package org.gksx;
 
 import java.io.IOException;
 
+import org.gksx.quipu.PubSubQuipu;
 import org.gksx.quipu.Quipu;
 import org.gksx.quipu.QuipuException;
-import org.gksx.quipu.PubSub.PubSubQuipu;
 import org.junit.Test;
 
 public class PubSubQuipuTest {
 
     @Test
-    public void test_subscrie() throws IOException, QuipuException {
-        PubSubQuipu pubSubQuipu = new Quipu()
+    public void test_subscrie() {
+        PubSubQuipu pubSubQuipu = Quipu
+            .pubsub()
             .subscribe("channel");
 
-        pubSubQuipu.onEvent((a) -> {
-            System.out.println(a);
-        });
+        pubSubQuipu.close();
     }
 }

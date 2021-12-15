@@ -1,6 +1,5 @@
 package org.gksx.quipu;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public class ConnectionPool {
     }
 
 
-    public static ConnectionPool create(String uri, int port) throws IOException{
+    public static ConnectionPool create(String uri, int port) {
         List<Connection> pool = new ArrayList<>(INITIAL_POOL_SIZE);
 
         for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
@@ -24,7 +23,7 @@ public class ConnectionPool {
         return new ConnectionPool(pool);
     }
 
-    private static Connection createConnection(String uri, int port) throws IOException {
+    private static Connection createConnection(String uri, int port) {
         return new Connection(uri, port);
     }
 
