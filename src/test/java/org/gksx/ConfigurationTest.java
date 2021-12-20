@@ -15,8 +15,8 @@ public class ConfigurationTest {
     public void testBuilder() throws IOException{
         Configuration configuration = QuipuConfiguration
             .builder()
-            .withPort(6379)
-            .withUri("localhost")
+            .port(6379)
+            .uri("localhost")
             .build();
 
         assertEquals("localhost", configuration.getUri());

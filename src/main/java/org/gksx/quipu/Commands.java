@@ -2,7 +2,7 @@ package org.gksx.quipu;
 
 import java.util.Map;
 
-public interface Commands {
+interface Commands {
 
     static final String GET = "GET";
     static final String SET = "SET";
@@ -16,7 +16,11 @@ public interface Commands {
     static final String HSET = "HSET";
     static final String SUBSCRIBE = "SUBSCRIBE";
     static final String UNSUBSCRIBE = "UNSUBSCRIBE";
-
+    static final String STRLEN = "STRLEN";
+    static final String MULTI = "MULTI";
+    static final String EXEC = "EXEC";
+    static final String PUBLISH = "PUBLISH";
+    
     String get(String key);
     void set(String key, String value);
     void set(String key, Long value);
@@ -28,4 +32,8 @@ public interface Commands {
     Long del(String key);
     String getDel(String key);
     Long hset(String key, Map<String, String> map);
+    Long strlen(String key);
+    String multi();
+    String[] exec();
+    Long publish(String channel, String message);
 }

@@ -1,13 +1,19 @@
 package org.gksx.quipu;
 
 public class QuipuConfiguration implements Configuration {
-    private String uri;
-    private int port;
+    
+    private String uri = "127.0.0.1";
+    private int port = 6379;
 
     private QuipuConfiguration(){}
 
     public static Builder builder(){
         return new Builder();
+    }
+
+    public static QuipuConfiguration defaultConfiguration(){
+        return new Builder()
+            .build();
     }
 
     @Override
@@ -27,12 +33,12 @@ public class QuipuConfiguration implements Configuration {
             configuration = new QuipuConfiguration();
         }
 
-        public Builder withUri(String uri){
+        public Builder uri(String uri){
             configuration.uri = uri;
             return this;
         }
 
-        public Builder withPort(int port){
+        public Builder port(int port){
             configuration.port = port;
             return this;
         }

@@ -13,37 +13,34 @@ public class Quipu extends PubSubQuipu implements Commands {
     private static final byte COLON_BYTE = ':';   
     private static final char CARRIAGE_RETURN = '\r';
     private static final int NILVALUE = -1;
-    
-    private String uri = "127.0.0.1";
-    private int port = 6379;
-
+  
     private Connection connection;
 
     public Quipu(String uri, int port)  {
-        this.uri = uri;
-        this.port = port;
-        connect();
+        Configuration configuration = QuipuConfiguration
+            .builder()
+            .uri(uri)
+            .port(port)
+            .build();
+
+        connect(configuration);
     }
 
     public Quipu()  {
-        connect();
+        Configuration configuration = QuipuConfiguration.defaultConfiguration();
+        connect(configuration);
     }
 
     public Quipu(Configuration configuration) {
-        this.port = configuration.getPort();
-        this.uri = configuration.getUri();
-        connect();
+        connect(configuration);
     }
 
-    public Quipu(Connection quipuStream){
-        this.connection = quipuStream;
+    public Quipu(Connection connection){
+        this.connection = connection;
     }
 
-    public Quipu(String channel) {
-    }
-
-    private void connect()  {
-        connection = new Connection(this.uri, this.port);                                                        
+    private void connect(Configuration configuration)  {
+        connection = new Connection(configuration);                                                        
     }
 
     private Object callRaw(String... args) {
@@ -51,10 +48,19 @@ public class Quipu extends PubSubQuipu implements Commands {
         connection.writeAndFlush(formatted);
         return proccessReply();
     }
+
     
     public String call(String... args){
         var resp = callRawByteArray(args);
         return toString(resp);
+    }
+
+    public String multi(){
+        return call(MULTI);
+    }
+
+    public String[] exec(){
+        return callRawExpectList(EXEC);
     }
 
     public int parse(){
@@ -99,18 +105,15 @@ public class Quipu extends PubSubQuipu implements Commands {
                 var q = parseBulkString(len);
                 return q;
             }
-            case ASTERISK_BYTE:{
+            case ASTERISK_BYTE:
                 return parseBulkArray();                
-            }
-            case PLUS_BYTE:{
+            case PLUS_BYTE:
                 return connection.readLine();
-            }
+            case COLON_BYTE:
+                return connection.readLine();
             case MINUS_BYTE:{
                 String errorMessage = new String(connection.readLine());
                 throw new QuipuException(errorMessage);
-            }
-            case COLON_BYTE:{
-                return connection.readLine();
             }
             default:
                 throw new QuipuException("somethin went wrong");
@@ -244,24 +247,29 @@ public class Quipu extends PubSubQuipu implements Commands {
         return this;
     }
 
-    public static PubSubQuipu pubsub(){
-        return new Quipu();
-    }
-
-    public static PubSubQuipu pubsub(Configuration configuration){
-        return new Quipu(configuration);
-    }
-
+    
     @Override
-    public void listen(OnEvent onEvent) {
+    public void listen(OnMessageAction onMessageAction) {
         while(true) {
             Object resp = proccessReply();
             if (resp instanceof String[]) {
                 String[] bulkArray = (String[]) resp;
                 if (isEventFromCurrentChannel(bulkArray[1])) {
-                    onEvent.perform(bulkArray[2]);
+                    onMessageAction.perform(bulkArray[2]);
                 }
             }
         }
+    }
+
+    @Override
+    public Long strlen(String key) {
+        var resp = callRawByteArray(STRLEN, key);
+        return toLong(resp);
+    }
+
+    @Override
+    public Long publish(String channel, String message) {
+        var resp = callRawByteArray(PUBLISH, channel, message);
+        return toLong(resp);
     }
 }

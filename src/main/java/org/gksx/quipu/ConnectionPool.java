@@ -24,7 +24,8 @@ public class ConnectionPool {
     }
 
     private static Connection createConnection(String uri, int port) {
-        return new Connection(uri, port);
+
+        return new Connection(QuipuConfiguration.defaultConfiguration());
     }
 
     public Connection getConnection(){

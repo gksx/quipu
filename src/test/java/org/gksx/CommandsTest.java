@@ -127,4 +127,17 @@ public class CommandsTest
         map.put("hello", "world");
         quipu.hset("mymap", map);
     }
+
+    @Test
+    public void multi_and_exec() {
+        quipu.multi();
+        quipu.set("hello", "world");
+        quipu.set("foo", "bar");
+        var resp = quipu.exec();
+
+        assertEquals(2, resp.length);
+        for (String retval : resp) {
+            assertEquals("OK", retval);
+        }
+    }
 }

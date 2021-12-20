@@ -13,9 +13,9 @@ public class Connection {
     private Socket socket;
     private static final byte[] CARRIAGE_RETURN_LINE_FEED = {'\r', '\n'};
 
-    public Connection(String uri, int port) {
+    Connection(Configuration configuration) {
         try {
-            socket = new Socket(uri, port);
+            socket = new Socket(configuration.getUri(), configuration.getPort());
             outputStream = socket.getOutputStream();
             inputStream = socket.getInputStream();               
         } catch (IOException e) {
@@ -23,7 +23,7 @@ public class Connection {
         }
     }
 
-    public char read() {
+    char read() {
         try{
             return (char) inputStream.read();
         } catch (IOException e) {
@@ -31,7 +31,7 @@ public class Connection {
         }
     }
 
-    public void close() { 
+    void close() { 
         try {
             outputStream.close();
             inputStream.close();
@@ -41,7 +41,7 @@ public class Connection {
         }
     }
 
-    protected int readBuf(byte[] buf, int i, int len) {
+    int readBuf(byte[] buf, int i, int len) {
         try {
             return inputStream.read(buf, i, len);
         } catch (IOException e) {
@@ -88,7 +88,7 @@ public class Connection {
         return buf.toByteArray();
     }
 
-    public void writeAndFlush(byte[] formatted) {
+    void writeAndFlush(byte[] formatted) {
         try {
             outputStream.write(formatted);
             outputStream.flush();

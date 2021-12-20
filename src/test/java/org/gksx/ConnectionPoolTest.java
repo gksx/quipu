@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class ConnectionPoolTest {
 
-    @Test
+    // @Test
     public void test_connection(){
        
         var pool = ConnectionPool.create("localhost", 6379);
@@ -15,7 +15,7 @@ public class ConnectionPoolTest {
         Assert.assertTrue(pool.getConnection().isOpen());
     }
 
-    @Test
+    // @Test
     public void test_connection_with_quipu() {
         var pool = ConnectionPool.create("localhost", 6379);
 
