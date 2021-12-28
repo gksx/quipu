@@ -18,9 +18,11 @@ public class PubSubQuipuTest {
         subscriberThread.start();
         Thread.sleep(1000);//wait one second to start publish
         publisher.start();
+        
         publisher.join();
         quipuSubscribeClient.close();
         subscriberThread.join();
+
         var messagesReceived = subscriber.getValue();
         assertEquals(messagesReceived, 5);
     }
@@ -38,7 +40,6 @@ public class PubSubQuipuTest {
             try {
                 quipu.subscribe("channel")
                     .listen(s -> {
-                        System.out.println(s);
                         value++;
                     });
             } catch(QuipuException qu){} //we dont care
