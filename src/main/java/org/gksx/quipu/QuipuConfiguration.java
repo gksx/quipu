@@ -7,7 +7,7 @@ public class QuipuConfiguration implements Configuration {
 
     private QuipuConfiguration(){}
 
-    public static Builder builder(){
+    public static Builder configurationBuilder(){
         return new Builder();
     }
 

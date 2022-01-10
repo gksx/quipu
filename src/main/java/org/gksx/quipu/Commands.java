@@ -2,25 +2,27 @@ package org.gksx.quipu;
 
 import java.util.Map;
 
-interface Commands {
-
-    static final String GET = "GET";
-    static final String SET = "SET";
-    static final String INCR = "INCR";
-    static final String INCRBY = "INCRBY";
-    static final String SETEX = "SETEX";
-    static final String TTL = "TTL";
-    static final String APPEND ="APPEND";
-    static final String DEL = "DEL";
-    static final String GETDEL = "GETDEL";
-    static final String HSET = "HSET";
-    static final String SUBSCRIBE = "SUBSCRIBE";
-    static final String UNSUBSCRIBE = "UNSUBSCRIBE";
-    static final String STRLEN = "STRLEN";
-    static final String MULTI = "MULTI";
-    static final String EXEC = "EXEC";
-    static final String PUBLISH = "PUBLISH";
+public interface Commands {
     
+    class Keys {
+        static final String GET = "GET";
+        static final String SET = "SET";
+        static final String INCR = "INCR";
+        static final String INCRBY = "INCRBY";
+        static final String SETEX = "SETEX";
+        static final String TTL = "TTL";
+        static final String APPEND ="APPEND";
+        static final String DEL = "DEL";
+        static final String GETDEL = "GETDEL";
+        static final String HSET = "HSET";
+        static final String SUBSCRIBE = "SUBSCRIBE";
+        static final String UNSUBSCRIBE = "UNSUBSCRIBE";
+        static final String STRLEN = "STRLEN";
+        static final String MULTI = "MULTI";
+        static final String EXEC = "EXEC";
+        static final String PUBLISH = "PUBLISH";
+    }
+      
     String get(String key);
     void set(String key, String value);
     void set(String key, Long value);

@@ -14,7 +14,7 @@ public class ConfigurationTest {
     @Test
     public void testBuilder() throws IOException{
         Configuration configuration = QuipuConfiguration
-            .builder()
+            .configurationBuilder()
             .port(6379)
             .uri("localhost")
             .build();

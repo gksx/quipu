@@ -18,7 +18,7 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     public Quipu(String uri, int port)  {
         Configuration configuration = QuipuConfiguration
-            .builder()
+            .configurationBuilder()
             .uri(uri)
             .port(port)
             .build();
@@ -56,11 +56,11 @@ public class Quipu extends PubSubQuipu implements Commands {
     }
 
     public String multi(){
-        return call(MULTI);
+        return call(Commands.Keys.MULTI);
     }
 
     public String[] exec(){
-        return callRawExpectList(EXEC);
+        return callRawExpectList(Commands.Keys.EXEC);
     }
 
     public int parse(){
@@ -166,35 +166,35 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     @Override
     public String get(String key) {
-        byte[] response = callRawByteArray(GET, key);
+        byte[] response = callRawByteArray(Commands.Keys.GET, key);
         return toString(response);
     }
 
     @Override
     public void set(String key, String value) {
-        callRaw(SET, key, value);
+        callRaw(Commands.Keys.SET, key, value);
     }
 
     @Override
     public Long incr(String key) {
-        byte[] resp = callRawByteArray(INCR, key);
+        byte[] resp = callRawByteArray(Commands.Keys.INCR, key);
         return toLong(resp);
     }
 
     @Override
     public void setEx(String key, Long seconds, String value) {
-        callRaw(SETEX, key, seconds.toString(), value);
+        callRaw(Commands.Keys.SETEX, key, seconds.toString(), value);
     }
 
     @Override
     public Long ttl(String key) {
-        byte[] resp = (byte[])callRaw(TTL, key);
+        byte[] resp = (byte[])callRaw(Commands.Keys.TTL, key);
         return toLong(resp);
     }
 
     @Override
     public Long incrBy(String key, Long value) {
-        byte[] resp = callRawByteArray(INCRBY, key, value.toString());
+        byte[] resp = callRawByteArray(Commands.Keys.INCRBY, key, value.toString());
         return toLong(resp);
     }
 
@@ -205,19 +205,19 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     @Override
     public Long append(String key, String value) {
-        byte[] resp = callRawByteArray(APPEND, key, value);
+        byte[] resp = callRawByteArray(Commands.Keys.APPEND, key, value);
         return toLong(resp);
     }
 
     @Override
     public Long del(String key) {
-        byte[] resp = callRawByteArray(DEL, key);
+        byte[] resp = callRawByteArray(Commands.Keys.DEL, key);
         return toLong(resp);
     }
 
     @Override
     public String getDel(String key) {
-        byte[] resp = callRawByteArray(GETDEL, key);
+        byte[] resp = callRawByteArray(Commands.Keys.GETDEL, key);
         return toString(resp);
     }
 
@@ -225,7 +225,7 @@ public class Quipu extends PubSubQuipu implements Commands {
     public Long hset(String key, Map<String, String> map) {
         List<String> list = new ArrayList<>();
         
-        list.add(HSET);
+        list.add(Commands.Keys.HSET);
         list.add(key);
 
         for (Map.Entry<String, String> entry : map.entrySet()){
@@ -242,7 +242,7 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     @Override
     public PubSubQuipu subscribe(String channel)  {
-        String[] resp = callRawExpectList(SUBSCRIBE, channel);
+        String[] resp = callRawExpectList(Commands.Keys.SUBSCRIBE, channel);
         setChannel(resp[1]);
         return this;
     }
@@ -263,13 +263,13 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     @Override
     public Long strlen(String key) {
-        var resp = callRawByteArray(STRLEN, key);
+        var resp = callRawByteArray(Commands.Keys.STRLEN, key);
         return toLong(resp);
     }
 
     @Override
     public Long publish(String channel, String message) {
-        var resp = callRawByteArray(PUBLISH, channel, message);
+        var resp = callRawByteArray(Commands.Keys.PUBLISH, channel, message);
         return toLong(resp);
     }
 }
