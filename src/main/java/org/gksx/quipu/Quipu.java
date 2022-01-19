@@ -60,11 +60,11 @@ public class Quipu extends PubSubQuipu implements Commands {
 
         char p = connection.read();
 
-        while (p != QuipuConstants.CARRIAGE_RETURN){
+        while (p != RespConstants.CARRIAGE_RETURN){
             
             if (p == '-'){
                 connection.moveToEndOfLine();
-                return QuipuConstants.NILVALUE;
+                return RespConstants.NILVALUE;
             }
 
             len = (len*10) + (p - '0');
@@ -90,20 +90,20 @@ public class Quipu extends PubSubQuipu implements Commands {
         char prefix = connection.read();
 
         switch (prefix){
-            case QuipuConstants.DOLLAR_BYTE:{
+            case RespConstants.DOLLAR_BYTE:{
                 int len = parse();
-                if (len == QuipuConstants.NILVALUE)
+                if (len == RespConstants.NILVALUE)
                     return null;
                 var q = parseBulkString(len);
                 return q;
             }
-            case QuipuConstants.ASTERISK_BYTE:
+            case RespConstants.ASTERISK_BYTE:
                 return parseBulkArray();                
-            case QuipuConstants.PLUS_BYTE:
+            case RespConstants.PLUS_BYTE:
                 return connection.readLine();
-            case QuipuConstants.COLON_BYTE:
+            case RespConstants.COLON_BYTE:
                 return connection.readLine();
-            case QuipuConstants.MINUS_BYTE:{
+            case RespConstants.MINUS_BYTE:{
                 String errorMessage = new String(connection.readLine());
                 throw new QuipuException(errorMessage);
             }

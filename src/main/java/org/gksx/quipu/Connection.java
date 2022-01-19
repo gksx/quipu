@@ -52,9 +52,9 @@ public class Connection {
         try {
             while (true){
                 var q = inputStream.read();
-                if (q == QuipuConstants.CARRIAGE_RETURN_LINE_FEED[0]){
+                if (q == RespConstants.CARRIAGE_RETURN_LINE_FEED[0]){
                     var s = inputStream.read();
-                    if (s == QuipuConstants.CARRIAGE_RETURN_LINE_FEED[1]){
+                    if (s == RespConstants.CARRIAGE_RETURN_LINE_FEED[1]){
                         break;
                     }
                 }
@@ -71,9 +71,9 @@ public class Connection {
         while(next != -1) {
             try {
                 next = inputStream.read();
-                if (next == QuipuConstants.CARRIAGE_RETURN_LINE_FEED[0]){
+                if (next == RespConstants.CARRIAGE_RETURN_LINE_FEED[0]){
                     var s = inputStream.read();
-                    if (s == QuipuConstants.CARRIAGE_RETURN_LINE_FEED[1]){
+                    if (s == RespConstants.CARRIAGE_RETURN_LINE_FEED[1]){
                         break;
                     }
                 }
