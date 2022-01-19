@@ -11,7 +11,6 @@ public class Connection {
     private OutputStream outputStream;
     private InputStream inputStream;
     private Socket socket;
-    private static final byte[] CARRIAGE_RETURN_LINE_FEED = {'\r', '\n'};
 
     Connection(Configuration configuration) {
         try {
@@ -53,9 +52,9 @@ public class Connection {
         try {
             while (true){
                 var q = inputStream.read();
-                if (q == CARRIAGE_RETURN_LINE_FEED[0]){
+                if (q == QuipuConstants.CARRIAGE_RETURN_LINE_FEED[0]){
                     var s = inputStream.read();
-                    if (s == CARRIAGE_RETURN_LINE_FEED[1]){
+                    if (s == QuipuConstants.CARRIAGE_RETURN_LINE_FEED[1]){
                         break;
                     }
                 }
@@ -72,9 +71,9 @@ public class Connection {
         while(next != -1) {
             try {
                 next = inputStream.read();
-                if (next == CARRIAGE_RETURN_LINE_FEED[0]){
+                if (next == QuipuConstants.CARRIAGE_RETURN_LINE_FEED[0]){
                     var s = inputStream.read();
-                    if (s == CARRIAGE_RETURN_LINE_FEED[1]){
+                    if (s == QuipuConstants.CARRIAGE_RETURN_LINE_FEED[1]){
                         break;
                     }
                 }

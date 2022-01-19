@@ -5,14 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Quipu extends PubSubQuipu implements Commands {
-
-    private static final byte DOLLAR_BYTE = '$';
-    private static final byte ASTERISK_BYTE = '*';
-    private static final byte PLUS_BYTE = '+';
-    private static final byte MINUS_BYTE = '-';
-    private static final byte COLON_BYTE = ':';   
-    private static final char CARRIAGE_RETURN = '\r';
-    private static final int NILVALUE = -1;
   
     private Connection connection;
 
@@ -68,11 +60,11 @@ public class Quipu extends PubSubQuipu implements Commands {
 
         char p = connection.read();
 
-        while (p != CARRIAGE_RETURN){
+        while (p != QuipuConstants.CARRIAGE_RETURN){
             
             if (p == '-'){
                 connection.moveToEndOfLine();
-                return NILVALUE;
+                return QuipuConstants.NILVALUE;
             }
 
             len = (len*10) + (p - '0');
@@ -98,20 +90,20 @@ public class Quipu extends PubSubQuipu implements Commands {
         char prefix = connection.read();
 
         switch (prefix){
-            case DOLLAR_BYTE:{
+            case QuipuConstants.DOLLAR_BYTE:{
                 int len = parse();
-                if (len == NILVALUE)
+                if (len == QuipuConstants.NILVALUE)
                     return null;
                 var q = parseBulkString(len);
                 return q;
             }
-            case ASTERISK_BYTE:
+            case QuipuConstants.ASTERISK_BYTE:
                 return parseBulkArray();                
-            case PLUS_BYTE:
+            case QuipuConstants.PLUS_BYTE:
                 return connection.readLine();
-            case COLON_BYTE:
+            case QuipuConstants.COLON_BYTE:
                 return connection.readLine();
-            case MINUS_BYTE:{
+            case QuipuConstants.MINUS_BYTE:{
                 String errorMessage = new String(connection.readLine());
                 throw new QuipuException(errorMessage);
             }
