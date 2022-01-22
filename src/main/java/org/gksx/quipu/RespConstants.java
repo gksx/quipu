@@ -1,6 +1,8 @@
 package org.gksx.quipu;
 
 class RespConstants {
+    private RespConstants(){}
+    
     static final byte[] CARRIAGE_RETURN_LINE_FEED = {'\r', '\n'};
     static final char CARRIAGE_RETURN = '\r';
     static final byte DOLLAR_BYTE = '$';

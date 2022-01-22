@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.gksx.quipu.CommandFactory;
@@ -139,5 +141,60 @@ public class CommandsTest
         for (String retval : resp) {
             assertEquals("OK", retval);
         }
+    }
+
+    @Test
+    public void del_and_lpush(){
+        quipu.del("mylist");
+        Long expected = 1L;
+        var count = quipu.lpush("mylist", "element");
+
+        assertEquals(expected, count);
+    }
+
+    @Test
+    public void del_and_lpush_with_list(){
+        quipu.del("mylist1");
+        Long expected = 3L;
+
+        List<String> elements = Arrays.asList("first", "second", "third");
+
+        var count = quipu.lpush("mylist1", elements);
+
+        assertEquals(expected, count);
+    }
+
+    @Test
+    public void lpush_and_lpop(){
+        quipu.del("mylist2");
+        List<String> elements = Arrays.asList("first", "second", "third");
+
+        quipu.lpush("mylist2", elements);
+
+        var response = quipu.lpop("mylist2");
+        assertEquals("third", response);
+    }
+
+    @Test
+    public void lpush_with_range_and_lpop(){
+        quipu.del("mylist3");
+        List<String> elements = Arrays.asList("first", "second", "third");
+
+        quipu.lpush("mylist3", elements);
+
+        var response = quipu.lpop("mylist3", 2L);
+        assertTrue(response.length == 2);
+    }
+
+    @Test
+    public void lpush_and_llen(){
+        quipu.del("mylist4");
+        Long expected = 1L;
+
+        quipu.lpush("mylist4", "element");
+
+        var len = quipu.llen("mylist4");
+        assertEquals(expected, len);
+
     }
 }

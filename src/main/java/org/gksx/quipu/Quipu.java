@@ -129,16 +129,16 @@ public class Quipu extends PubSubQuipu implements Commands {
         connection.close();
     }
 
-    private Long toLong(byte[] data){
-        if (data == null)
+    private Long toLong(byte[] resp){
+        if (resp == null)
             return null;
-        return Long.valueOf(new String(data));
+        return Long.valueOf(new String(resp));
     }
 
-    private String toString(byte[] data){
-        if (data == null)
+    private String toString(byte[] resp){
+        if (resp == null)
             return null;
-        return new String(data);
+        return new String(resp);
     }
 
     private byte[] callRawByteArray(String... args){
@@ -262,6 +262,41 @@ public class Quipu extends PubSubQuipu implements Commands {
     @Override
     public Long publish(String channel, String message) {
         var resp = callRawByteArray(Commands.Keys.PUBLISH, channel, message);
+        return toLong(resp);
+    }
+
+    @Override
+    public Long lpush(String key, String element) {
+        var resp = callRawByteArray(Commands.Keys.LPUSH, key, element);
+        return toLong(resp);
+    }
+
+    @Override
+    public Long lpush(String key, List<String> elements) {
+        var list = new ArrayList<String>();
+        list.add(Commands.Keys.LPUSH);
+        list.add(key);
+        list.addAll(elements);
+        String[] commandArray = list.stream().toArray(String[] ::new);
+        var resp = callRawByteArray(commandArray);
+        return toLong(resp);
+    }
+
+    @Override
+    public String lpop(String key) {
+        var resp = callRawByteArray(Commands.Keys.LPOP, key);
+        return toString(resp);
+    }
+
+    @Override
+    public String[] lpop(String key, Long count) {
+        var resp = callRawExpectList(Commands.Keys.LPOP, key, count.toString());
+        return resp;
+    }
+
+    @Override
+    public Long llen(String key) {
+        var resp = callRawByteArray(Commands.Keys.LLEN, key);
         return toLong(resp);
     }
 }

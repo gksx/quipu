@@ -1,10 +1,13 @@
 package org.gksx.quipu;
 
+import java.util.List;
 import java.util.Map;
 
 public interface Commands {
     
     class Keys {
+        private Keys(){ }
+        
         static final String GET = "GET";
         static final String SET = "SET";
         static final String INCR = "INCR";
@@ -21,6 +24,9 @@ public interface Commands {
         static final String MULTI = "MULTI";
         static final String EXEC = "EXEC";
         static final String PUBLISH = "PUBLISH";
+        static final String LPUSH = "LPUSH";
+        static final String LPOP = "LPOP";
+        static final String LLEN = "LLEN";
     }
       
     String get(String key);
@@ -38,4 +44,9 @@ public interface Commands {
     String multi();
     String[] exec();
     Long publish(String channel, String message);
+    Long lpush(String key, String element);
+    Long lpush(String key, List<String> elements);
+    String lpop(String key);
+    String[] lpop(String key, Long count);
+    Long llen(String key);
 }
