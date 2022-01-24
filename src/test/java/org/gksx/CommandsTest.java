@@ -141,6 +141,8 @@ public class CommandsTest
         for (String retval : resp) {
             assertEquals("OK", retval);
         }
+
+        quipu.close();
     }
 
     @Test
@@ -195,6 +197,12 @@ public class CommandsTest
 
         var len = quipu.llen("mylist4");
         assertEquals(expected, len);
+    }
 
+    @Test
+    public void setRange(){
+        quipu.del("setrange");
+        var response = quipu.setRange("setrange", 6L, "world");
+        assertTrue(response == 11);
     }
 }

@@ -61,7 +61,6 @@ public class Quipu extends PubSubQuipu implements Commands {
         char p = connection.read();
 
         while (p != RespConstants.CARRIAGE_RETURN){
-            
             if (p == '-'){
                 connection.moveToEndOfLine();
                 return RespConstants.NILVALUE;
@@ -297,6 +296,12 @@ public class Quipu extends PubSubQuipu implements Commands {
     @Override
     public Long llen(String key) {
         var resp = callRawByteArray(Commands.Keys.LLEN, key);
+        return toLong(resp);
+    }
+
+    @Override
+    public Long setRange(String key, Long offset, String value) {
+        var resp = callRawByteArray(Commands.Keys.SETRANGE, key, offset.toString(), value);
         return toLong(resp);
     }
 }

@@ -27,6 +27,7 @@ public interface Commands {
         static final String LPUSH = "LPUSH";
         static final String LPOP = "LPOP";
         static final String LLEN = "LLEN";
+        static final String SETRANGE = "SETRANGE";
     }
       
     String get(String key);
@@ -49,4 +50,5 @@ public interface Commands {
     String lpop(String key);
     String[] lpop(String key, Long count);
     Long llen(String key);
+    Long setRange(String key, Long offset, String value);
 }
