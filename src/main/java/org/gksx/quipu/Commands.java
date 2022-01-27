@@ -28,6 +28,8 @@ public interface Commands {
         static final String LPOP = "LPOP";
         static final String LLEN = "LLEN";
         static final String SETRANGE = "SETRANGE";
+        static final String HGET = "HGET";
+        static final String HGETALL = "HGETALL";
     }
       
     String get(String key);
@@ -51,4 +53,6 @@ public interface Commands {
     String[] lpop(String key, Long count);
     Long llen(String key);
     Long setRange(String key, Long offset, String value);
+    Map<String, String> hgetAll(String key);
+    String hget(String key, String field);
 }

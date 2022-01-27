@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,36 +32,6 @@ public class CommandsTest
     public void closeConnection() throws IOException{
         quipu.close();
     }
-
-    @Test
-    public void shouldBeFormmatted() {
-
-        String[] args = {"get", "tja", "tjä"};
-
-        var bytesExpected = "*3\r\n$3\r\nget\r\n$3\r\ntja\r\n$3\r\ntjä\r\n".getBytes();
-
-        var command = CommandFactory.build(args);
-
-        for (int i = 0; i < command.length; i++) {
-            Assert.assertEquals(bytesExpected[i], command[i]);
-        }
-    }
-
-    @Test
-    public void parser() {
-
-        var bytesToParse = "$10\r\nmylisthejs\r\n".getBytes();
-
-        int len = 0;
-
-        for (int i = 1; (char)bytesToParse[i] != '\r'; i++){
-            
-            len = (len*10) + ((char)bytesToParse[i] -'0');
-        }
-
-        Assert.assertEquals(10, len);
-    }
-
 
     @Test
     public void incr() throws IOException, QuipuException {
@@ -204,5 +175,47 @@ public class CommandsTest
         quipu.del("setrange");
         var response = quipu.setRange("setrange", 6L, "world");
         assertTrue(response == 11);
+    }
+
+    @Test
+    public void hset_and_hgetAll(){
+        quipu.del("hash");
+
+        Map<String, String> map = new HashMap<>();
+
+        map.put("hello", "world");
+        map.put("world", "hello");
+
+        quipu.hset("hash", map);
+        var resp = quipu.hgetAll("hash");
+
+        assertTrue(resp.size() == 2);
+    }
+
+    @Test
+    public void hset_and_hget(){
+        quipu.del("hget");
+
+        Map<String, String> map = new HashMap<>();
+
+        var expected = "world";
+
+        map.put("hello", "world");
+        map.put("world", "hello");
+
+        quipu.hset("hget", map);
+
+        var actual = quipu.hget("hget", "hello");
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void get_set_uft8(){
+        var expected = "äää";
+        quipu.set("utf8", expected);
+        var actual = quipu.get("utf8");
+
+        assertEquals(expected, actual);
     }
 }

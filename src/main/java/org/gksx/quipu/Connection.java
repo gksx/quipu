@@ -50,7 +50,8 @@ public class Connection {
 
     void moveToEndOfLine() {
         try {
-            while (true){
+            int next = 0;
+            while (next != -1){
                 var q = inputStream.read();
                 if (q == RespConstants.CARRIAGE_RETURN_LINE_FEED[0]){
                     var s = inputStream.read();

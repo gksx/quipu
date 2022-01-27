@@ -1,6 +1,7 @@
 package org.gksx.quipu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class Quipu extends PubSubQuipu implements Commands {
     }
 
     private Object callRaw(String... args) {
-        var formatted = CommandFactory.build(args);
+        var formatted = CommandFactory.buildSafeEncoding(args);
         connection.writeAndFlush(formatted);
         return proccessReply();
     }
@@ -55,7 +56,7 @@ public class Quipu extends PubSubQuipu implements Commands {
         return callRawExpectList(Commands.Keys.EXEC);
     }
 
-    public int parse(){
+    public int parseRespLength(){
         int len = 0;
 
         char p = connection.read();
@@ -90,7 +91,7 @@ public class Quipu extends PubSubQuipu implements Commands {
 
         switch (prefix){
             case RespConstants.DOLLAR_BYTE:{
-                int len = parse();
+                int len = parseRespLength();
                 if (len == RespConstants.NILVALUE)
                     return null;
                 var q = parseBulkString(len);
@@ -112,7 +113,7 @@ public class Quipu extends PubSubQuipu implements Commands {
     }
 
     private String[] parseBulkArray() {
-        int elemnts = parse();
+        int elemnts = parseRespLength();
 
         String[] list = new String[elemnts];
 
@@ -303,5 +304,23 @@ public class Quipu extends PubSubQuipu implements Commands {
     public Long setRange(String key, Long offset, String value) {
         var resp = callRawByteArray(Commands.Keys.SETRANGE, key, offset.toString(), value);
         return toLong(resp);
+    }
+
+    @Override
+    public Map<String, String> hgetAll(String key) {
+        var resp = callRawExpectList(Commands.Keys.HGETALL, key);
+        HashMap<String, String> hash = new HashMap<>();
+
+        for (int i = 0; i < resp.length; i+=2) {
+            hash.put(resp[i], resp[i+1]);
+        }
+        
+        return hash;
+    }
+
+    @Override
+    public String hget(String key, String field) {
+        var resp = callRawByteArray(Commands.Keys.HGET, key, field);
+        return toString(resp);
     }
 }
