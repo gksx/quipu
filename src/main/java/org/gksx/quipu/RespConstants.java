@@ -13,6 +13,4 @@ class RespConstants {
     static final String CARRIAGE_RETURN_LINE_FEED = "\r\n";
     static final byte[] CRLF = {'\r','\n'};
     static byte[] colon = {'$'};
-
-    
 }
