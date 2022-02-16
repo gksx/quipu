@@ -3,11 +3,11 @@ package org.gksx.quipu;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-class Parser {
+class StreamHandler {
 
     private Connection connection;
 
-    public Parser(Connection connection){
+    public StreamHandler(Connection connection){
         this.connection = connection;
     }
 
@@ -23,7 +23,7 @@ class Parser {
                 return q;
             }
             case RespConstants.ASTERISK_BYTE:
-                return parseBulkArray();                
+                return bulkArray();                
             case RespConstants.PLUS_BYTE:
                 return connection.readLine();
             case RespConstants.COLON_BYTE:
@@ -38,7 +38,7 @@ class Parser {
     }
 
     public Object prepareArgsProcessReply(String... args) {
-        var formatted = Parser.toRespArray(args);
+        var formatted = StreamHandler.toBulkArray(args);
         connection.writeToServer(formatted);
         return proccessReply();
     }
@@ -54,7 +54,7 @@ class Parser {
         return buf;
     }
 
-    public String[] parseBulkArray() {
+    public String[] bulkArray() {
         int elemnts = respLength();
 
         String[] list = new String[elemnts];
@@ -66,7 +66,7 @@ class Parser {
         return list;
     }
 
-    public int respLength(){
+    private int respLength(){
         int len = 0;
 
         char p = connection.read();
@@ -85,7 +85,7 @@ class Parser {
         return len;
     }
 
-    public static byte[] toRespArray(String... args){
+    public static byte[] toBulkArray(String... args){
         
         var buffer = new ByteArrayOutputStream();
 

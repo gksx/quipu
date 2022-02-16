@@ -7,12 +7,12 @@ public class QuipuConfiguration implements Configuration {
 
     private QuipuConfiguration(){}
 
-    public static Builder configurationBuilder(){
-        return new Builder();
+    public static ConfigurationBuilder configurationBuilder(){
+        return new ConfigurationBuilder();
     }
 
     public static QuipuConfiguration defaultConfiguration(){
-        return new Builder()
+        return new ConfigurationBuilder()
             .build();
     }
 
@@ -26,19 +26,19 @@ public class QuipuConfiguration implements Configuration {
         return this.uri;
     }
 
-    public static class Builder {
+    public static class ConfigurationBuilder {
         private QuipuConfiguration configuration;
         
-        private Builder() {
+        private ConfigurationBuilder() {
             configuration = new QuipuConfiguration();
         }
 
-        public Builder uri(String uri){
+        public ConfigurationBuilder uri(String uri){
             configuration.uri = uri;
             return this;
         }
 
-        public Builder port(int port){
+        public ConfigurationBuilder port(int port){
             configuration.port = port;
             return this;
         }

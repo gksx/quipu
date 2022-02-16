@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Quipu extends PubSubQuipu implements Commands {
-  
-    private Parser parser;
+    private StreamHandler streamHandler;
 
     public Quipu(String uri, int port)  {
         Configuration configuration = QuipuConfiguration
@@ -30,27 +29,7 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     private void connect(Configuration configuration)  {
         Connection connection = new Connection(configuration);
-        parser = new Parser(connection);                                                        
-    }
-
-    public String call(String... args){
-        var resp = callRawByteArray(args);
-        return toString(resp);
-    }
-
-    public String multi(){
-        return call(Commands.Keys.MULTI);
-    }
-
-    public String[] exec(){
-        return callRawExpectList(Commands.Keys.EXEC);
-    }
-
-   
-
-    @Override
-    public void close()  {
-        parser.close();
+        streamHandler = new StreamHandler(connection);                                                        
     }
 
     private Long toLong(byte[] resp){
@@ -66,7 +45,7 @@ public class Quipu extends PubSubQuipu implements Commands {
     }
 
     private byte[] callRawByteArray(String... args){
-        Object returnObject = parser.prepareArgsProcessReply(args);
+        Object returnObject = streamHandler.prepareArgsProcessReply(args);
         if (returnObject == null)
             return null;
         return (byte[])returnObject;
@@ -74,10 +53,30 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     private String[] callRawExpectList(String... args){
 
-        Object rObject = parser.prepareArgsProcessReply(args);
+        Object rObject = streamHandler.prepareArgsProcessReply(args);
         if (rObject == null)
             return null;
         return (String[])rObject;
+    }
+
+    public String call(String... args){
+        var resp = callRawByteArray(args);
+        return toString(resp);
+    }
+
+    @Override
+    public String multi(){
+        return call(Commands.Keys.MULTI);
+    }
+
+    @Override
+    public String[] exec(){
+        return callRawExpectList(Commands.Keys.EXEC);
+    }   
+
+    @Override
+    public void close()  {
+        streamHandler.close();
     }
 
     @Override
@@ -88,7 +87,7 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     @Override
     public void set(String key, String value) {
-        parser.prepareArgsProcessReply(Commands.Keys.SET, key, value);
+        streamHandler.prepareArgsProcessReply(Commands.Keys.SET, key, value);
     }
 
     @Override
@@ -99,12 +98,12 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     @Override
     public void setEx(String key, Long seconds, String value) {
-        parser.prepareArgsProcessReply(Commands.Keys.SETEX, key, seconds.toString(), value);
+        streamHandler.prepareArgsProcessReply(Commands.Keys.SETEX, key, seconds.toString(), value);
     }
 
     @Override
     public Long ttl(String key) {
-        byte[] resp = (byte[])parser.prepareArgsProcessReply(Commands.Keys.TTL, key);
+        byte[] resp = (byte[])streamHandler.prepareArgsProcessReply(Commands.Keys.TTL, key);
         return toLong(resp);
     }
 
@@ -162,12 +161,11 @@ public class Quipu extends PubSubQuipu implements Commands {
         setChannel(resp[1]);
         return this;
     }
-
     
     @Override
     public void listen(OnMessageAction onMessageAction) {
         while(true) {
-            Object resp = parser.proccessReply();
+            Object resp = streamHandler.proccessReply();
             if (resp instanceof String[]) {
                 String[] bulkArray = (String[]) resp;
                 if (isEventFromCurrentChannel(bulkArray[1])) {
