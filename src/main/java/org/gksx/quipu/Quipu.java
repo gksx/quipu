@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Quipu extends PubSubQuipu implements Commands {
   
-    private Connection connection;
+    private Parser parser;
 
     public Quipu(String uri, int port)  {
         Configuration configuration = QuipuConfiguration
@@ -28,21 +28,11 @@ public class Quipu extends PubSubQuipu implements Commands {
         connect(configuration);
     }
 
-    public Quipu(Connection connection){
-        this.connection = connection;
-    }
-
     private void connect(Configuration configuration)  {
-        connection = new Connection(configuration);                                                        
+        Connection connection = new Connection(configuration);
+        parser = new Parser(connection);                                                        
     }
 
-    private Object callRaw(String... args) {
-        var formatted = CommandFactory.buildSafeEncoding(args);
-        connection.writeAndFlush(formatted);
-        return proccessReply();
-    }
-
-    
     public String call(String... args){
         var resp = callRawByteArray(args);
         return toString(resp);
@@ -56,77 +46,11 @@ public class Quipu extends PubSubQuipu implements Commands {
         return callRawExpectList(Commands.Keys.EXEC);
     }
 
-    public int parseRespLength(){
-        int len = 0;
-
-        char p = connection.read();
-
-        while (p != RespConstants.CARRIAGE_RETURN){
-            if (p == '-'){
-                connection.moveToEndOfLine();
-                return RespConstants.NILVALUE;
-            }
-
-            len = (len*10) + (p - '0');
-            p = connection.read();
-        }
-        connection.read();
-        
-        return len;
-    }
-
-    private byte[] parseBulkString(int len){
-
-        if (len == 0) return null;
-        
-        byte[] buf = new byte[len];
-        
-        connection.readBuf(buf, 0, len);
-        connection.moveToEndOfLine();
-        return buf;
-    }
-
-    private Object proccessReply() {
-        char prefix = connection.read();
-
-        switch (prefix){
-            case RespConstants.DOLLAR_BYTE:{
-                int len = parseRespLength();
-                if (len == RespConstants.NILVALUE)
-                    return null;
-                var q = parseBulkString(len);
-                return q;
-            }
-            case RespConstants.ASTERISK_BYTE:
-                return parseBulkArray();                
-            case RespConstants.PLUS_BYTE:
-                return connection.readLine();
-            case RespConstants.COLON_BYTE:
-                return connection.readLine();
-            case RespConstants.MINUS_BYTE:{
-                String errorMessage = new String(connection.readLine());
-                throw new QuipuException(errorMessage);
-            }
-            default:
-                throw new QuipuException("somethin went wrong");
-        }                  
-    }
-
-    private String[] parseBulkArray() {
-        int elemnts = parseRespLength();
-
-        String[] list = new String[elemnts];
-
-        for(var i = 0; i < elemnts; i++) {
-            list[i] = new String((byte[])proccessReply());
-        }
-
-        return list;
-    }
+   
 
     @Override
     public void close()  {
-        connection.close();
+        parser.close();
     }
 
     private Long toLong(byte[] resp){
@@ -142,7 +66,7 @@ public class Quipu extends PubSubQuipu implements Commands {
     }
 
     private byte[] callRawByteArray(String... args){
-        Object returnObject = callRaw(args);
+        Object returnObject = parser.prepareArgsProcessReply(args);
         if (returnObject == null)
             return null;
         return (byte[])returnObject;
@@ -150,7 +74,7 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     private String[] callRawExpectList(String... args){
 
-        Object rObject = callRaw(args);
+        Object rObject = parser.prepareArgsProcessReply(args);
         if (rObject == null)
             return null;
         return (String[])rObject;
@@ -164,7 +88,7 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     @Override
     public void set(String key, String value) {
-        callRaw(Commands.Keys.SET, key, value);
+        parser.prepareArgsProcessReply(Commands.Keys.SET, key, value);
     }
 
     @Override
@@ -175,12 +99,12 @@ public class Quipu extends PubSubQuipu implements Commands {
 
     @Override
     public void setEx(String key, Long seconds, String value) {
-        callRaw(Commands.Keys.SETEX, key, seconds.toString(), value);
+        parser.prepareArgsProcessReply(Commands.Keys.SETEX, key, seconds.toString(), value);
     }
 
     @Override
     public Long ttl(String key) {
-        byte[] resp = (byte[])callRaw(Commands.Keys.TTL, key);
+        byte[] resp = (byte[])parser.prepareArgsProcessReply(Commands.Keys.TTL, key);
         return toLong(resp);
     }
 
@@ -243,7 +167,7 @@ public class Quipu extends PubSubQuipu implements Commands {
     @Override
     public void listen(OnMessageAction onMessageAction) {
         while(true) {
-            Object resp = proccessReply();
+            Object resp = parser.proccessReply();
             if (resp instanceof String[]) {
                 String[] bulkArray = (String[]) resp;
                 if (isEventFromCurrentChannel(bulkArray[1])) {

@@ -53,9 +53,9 @@ public class Connection {
             int next = 0;
             while (next != -1){
                 var q = inputStream.read();
-                if (q == RespConstants.CARRIAGE_RETURN_LINE_FEED[0]){
+                if (q == RespConstants.CRLF[0]){
                     var s = inputStream.read();
-                    if (s == RespConstants.CARRIAGE_RETURN_LINE_FEED[1]){
+                    if (s == RespConstants.CRLF[1]){
                         break;
                     }
                 }
@@ -72,9 +72,9 @@ public class Connection {
         while(next != -1) {
             try {
                 next = inputStream.read();
-                if (next == RespConstants.CARRIAGE_RETURN_LINE_FEED[0]){
+                if (next == RespConstants.CRLF[0]){
                     var s = inputStream.read();
-                    if (s == RespConstants.CARRIAGE_RETURN_LINE_FEED[1]){
+                    if (s == RespConstants.CRLF[1]){
                         break;
                     }
                 }
@@ -88,7 +88,7 @@ public class Connection {
         return buf.toByteArray();
     }
 
-    void writeAndFlush(byte[] formatted) {
+    void writeToServer(byte[] formatted) {
         try {
             outputStream.write(formatted);
             outputStream.flush();

@@ -1,7 +1,6 @@
 package org.gksx.quipu;
 
 import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
 public class CommandFactory {
@@ -10,7 +9,7 @@ public class CommandFactory {
     private static final byte[] CRLF = {'\r','\n'};
     private static byte[] colon = {'$'};
 
-    public static byte[] buildSafeEncoding(String... args){
+    public static byte[] build(String... args){
         
         var buffer = new ByteArrayOutputStream();
 

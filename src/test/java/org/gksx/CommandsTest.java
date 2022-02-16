@@ -5,13 +5,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.gksx.quipu.CommandFactory;
 import org.gksx.quipu.Quipu;
 import org.gksx.quipu.QuipuException;
 import org.junit.After;
