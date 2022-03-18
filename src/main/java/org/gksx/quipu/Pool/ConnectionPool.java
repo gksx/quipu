@@ -3,7 +3,6 @@ package org.gksx.quipu.Pool;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.gksx.quipu.Configuration;
 import org.gksx.quipu.Quipu;
@@ -23,7 +22,7 @@ public class ConnectionPool {
     }
 
     public static ConnectionPool create(Configuration configuration) {
-        List<QuipuInstance> pool = new ArrayList<>(INITIAL_POOL_SIZE);
+        List<QuipuInstance> pool = new ArrayList<>(configuration.poolSize());
 
         for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
             pool.add(createConnection(configuration));
@@ -40,12 +39,16 @@ public class ConnectionPool {
             .filter(x -> !x.getIsInUse().get())
             .findFirst()
             .orElseThrow();
+
         q.setIsInUse();
         return q.getQuipu();
     }
 
     public void releaseAll() {
         for (QuipuInstance quipu : clientPool) {
+            if (quipu.getIsInUse().get()){
+                throw new QuipuPoolException("client is in use");
+            }
             quipu.getQuipu().close();
         }
     }
@@ -55,8 +58,6 @@ public class ConnectionPool {
             .filter(q -> q.getQuipu().equals(client))
             .findFirst()
             .orElseThrow()
-            .setIsNotInuser();
+            .setIsNotInUse();
     }
-
-    
 }

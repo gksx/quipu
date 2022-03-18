@@ -25,7 +25,7 @@ class QuipuInstance {
         this.isInUse.set(true);;
     }
 
-    public void setIsNotInuser(){
+    public void setIsNotInUse(){
         this.isInUse.set(false);
     }
     public void setQuipu(Quipu quipu) {
