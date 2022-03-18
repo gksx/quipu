@@ -4,6 +4,7 @@ public class QuipuConfiguration implements Configuration {
     
     private String uri = "127.0.0.1";
     private int port = 6379;
+    private int poolSize = 10;
 
     private QuipuConfiguration(){}
 
@@ -26,6 +27,12 @@ public class QuipuConfiguration implements Configuration {
         return this.uri;
     }
 
+    @Override
+    public int poolSize() {
+        // TODO Auto-generated method stub
+        return this.poolSize;
+    }
+
     public static class ConfigurationBuilder {
         private QuipuConfiguration configuration;
         
@@ -40,6 +47,11 @@ public class QuipuConfiguration implements Configuration {
 
         public ConfigurationBuilder port(int port){
             configuration.port = port;
+            return this;
+        }
+
+        public ConfigurationBuilder poolSize(int poolSize) {
+            configuration.poolSize = poolSize;
             return this;
         }
 
