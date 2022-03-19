@@ -1,6 +1,6 @@
 package org.gksx;
 
-import org.gksx.quipu.Pool.ConnectionPool;
+import org.gksx.quipu.pool.ConnectionPool;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

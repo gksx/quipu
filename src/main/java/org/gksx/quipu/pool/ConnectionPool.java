@@ -1,4 +1,4 @@
-package org.gksx.quipu.Pool;
+package org.gksx.quipu.pool;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +8,7 @@ import org.gksx.quipu.Configuration;
 import org.gksx.quipu.Quipu;
 import org.gksx.quipu.QuipuConfiguration;
 
-public class ConnectionPool {
+public class ConnectionPool implements AutoCloseable {
     private List<QuipuInstance> clientPool;
     
     private static int INITIAL_POOL_SIZE = 10;
@@ -59,5 +59,10 @@ public class ConnectionPool {
             .findFirst()
             .orElseThrow()
             .setIsNotInUse();
+    }
+
+    @Override
+    public void close() {
+        releaseAll();   
     }
 }

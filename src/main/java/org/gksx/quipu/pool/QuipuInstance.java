@@ -1,4 +1,4 @@
-package org.gksx.quipu.Pool;
+package org.gksx.quipu.pool;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

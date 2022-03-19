@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Quipu extends PubSubQuipu implements Commands {
+public class Quipu extends PubSubQuipu implements Commands, AutoCloseable {
     private StreamHandler streamHandler;
 
     public Quipu(String uri, int port)  {
