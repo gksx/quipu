@@ -4,11 +4,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.gksx.quipu.Quipu;
 
-class QuipuInstance {
+class PoolInstance {
     private Quipu quipu;
     private AtomicBoolean isInUse;
 
-    public QuipuInstance(Quipu quipu){
+    public PoolInstance(Quipu quipu){
         this.quipu = quipu;
         this.isInUse = new AtomicBoolean(false);
     }

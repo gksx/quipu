@@ -8,34 +8,34 @@ import org.gksx.quipu.Configuration;
 import org.gksx.quipu.Quipu;
 import org.gksx.quipu.QuipuConfiguration;
 
-public class ConnectionPool implements AutoCloseable {
-    private List<QuipuInstance> clientPool;
+public class QuipuPool implements AutoCloseable {
+    private List<PoolInstance> clientPool;
     
     private static int INITIAL_POOL_SIZE = 10;
 
-    private ConnectionPool(List<QuipuInstance> pool) {
+    private QuipuPool(List<PoolInstance> pool) {
         this.clientPool = Collections.synchronizedList(pool);
     }
 
-    public static ConnectionPool create(){
+    public static QuipuPool create(){
         return create(QuipuConfiguration.defaultConfiguration());
     }
 
-    public static ConnectionPool create(Configuration configuration) {
-        List<QuipuInstance> pool = new ArrayList<>(configuration.poolSize());
+    public static QuipuPool create(Configuration configuration) {
+        List<PoolInstance> pool = new ArrayList<>(configuration.poolSize());
 
         for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
             pool.add(createConnection(configuration));
         }
-        return new ConnectionPool(pool);
+        return new QuipuPool(pool);
     }
 
-    private static QuipuInstance createConnection(Configuration configuration) {
-        return new QuipuInstance(new Quipu(configuration));
+    private static PoolInstance createConnection(Configuration configuration) {
+        return new PoolInstance(new Quipu(configuration));
     }
 
     public Quipu getClient(){
-        QuipuInstance q = this.clientPool.stream()
+        PoolInstance q = this.clientPool.stream()
             .filter(x -> !x.getIsInUse().get())
             .findFirst()
             .orElseThrow();
@@ -45,7 +45,7 @@ public class ConnectionPool implements AutoCloseable {
     }
 
     public void releaseAll() {
-        for (QuipuInstance quipu : clientPool) {
+        for (PoolInstance quipu : clientPool) {
             if (quipu.getIsInUse().get()){
                 throw new QuipuPoolException("client is in use");
             }

@@ -1,6 +1,6 @@
 package org.gksx;
 
-import org.gksx.quipu.pool.ConnectionPool;
+import org.gksx.quipu.pool.QuipuPool;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,11 +8,11 @@ import org.junit.Test;
 
 public class ConnectionPoolTest {
 
-    private ConnectionPool pool;
+    private QuipuPool pool;
 
     @Before
     public void createPool() {
-        pool = ConnectionPool.create();
+        pool = QuipuPool.create();
     }
 
     @After
