@@ -29,7 +29,6 @@ public class QuipuConfiguration implements Configuration {
 
     @Override
     public int poolSize() {
-        // TODO Auto-generated method stub
         return this.poolSize;
     }
 
