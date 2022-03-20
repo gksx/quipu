@@ -11,7 +11,6 @@ import org.gksx.quipu.QuipuConfiguration;
 public class QuipuPool implements AutoCloseable {
     private List<PoolInstance> clientPool;
     
-    private static int INITIAL_POOL_SIZE = 10;
 
     private QuipuPool(List<PoolInstance> pool) {
         this.clientPool = Collections.synchronizedList(pool);
@@ -24,7 +23,7 @@ public class QuipuPool implements AutoCloseable {
     public static QuipuPool create(Configuration configuration) {
         List<PoolInstance> pool = new ArrayList<>(configuration.poolSize());
 
-        for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
+        for (int i = 0; i < configuration.poolSize(); i++) {
             pool.add(createConnection(configuration));
         }
         return new QuipuPool(pool);
@@ -35,13 +34,13 @@ public class QuipuPool implements AutoCloseable {
     }
 
     public Quipu getClient(){
-        PoolInstance q = this.clientPool.stream()
+        PoolInstance poolInstance = this.clientPool.stream()
             .filter(x -> !x.getIsInUse().get())
             .findFirst()
             .orElseThrow();
 
-        q.setIsInUse();
-        return q.getQuipu();
+        poolInstance.setIsInUse();
+        return poolInstance.getQuipu();
     }
 
     public void releaseAll() {

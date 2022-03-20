@@ -18,7 +18,7 @@ public class Connection {
             outputStream = socket.getOutputStream();
             inputStream = socket.getInputStream();               
         } catch (IOException e) {
-            throw new QuipuException(e.getMessage(), e.getCause());
+            throw new QuipuException(e.getMessage(), e);
         }
     }
 
