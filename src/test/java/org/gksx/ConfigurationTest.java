@@ -2,8 +2,6 @@ package org.gksx;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
 import org.gksx.quipu.Configuration;
 import org.gksx.quipu.QuipuConfiguration;
 import org.junit.Test;
