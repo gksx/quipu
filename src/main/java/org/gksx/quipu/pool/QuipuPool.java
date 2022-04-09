@@ -3,6 +3,7 @@ package org.gksx.quipu.pool;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.gksx.quipu.Configuration;
 import org.gksx.quipu.Quipu;
@@ -33,14 +34,17 @@ public class QuipuPool implements AutoCloseable {
         return new PoolInstance(new Quipu(configuration));
     }
 
-    public Quipu getClient(){
-        PoolInstance poolInstance = this.clientPool.stream()
+    synchronized public Quipu getClient(){
+        Optional<PoolInstance> poolInstance = Optional.empty();
+        while(poolInstance.isEmpty()){
+            poolInstance = this.clientPool.stream()
             .filter(x -> !x.getIsInUse().get())
-            .findFirst()
-            .orElseThrow();
+            .findFirst();
+        }
+        var client = poolInstance.get();
 
-        poolInstance.setIsInUse();
-        return poolInstance.getQuipu();
+        client.setIsInUse();
+        return client.getQuipu();
     }
 
     public void releaseAll() {
