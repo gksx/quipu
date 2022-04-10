@@ -28,7 +28,4 @@ class PoolInstance {
     public void setIsNotInUse(){
         this.isInUse.set(false);
     }
-    public void setQuipu(Quipu quipu) {
-        this.quipu = quipu;
-    }
 }
