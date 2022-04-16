@@ -251,7 +251,7 @@ public class Quipu extends PubSubQuipu implements Commands, Stream, AutoCloseabl
     }
 
     @Override
-    public String xAdd(String stream, String entryKey, Map<String, String> values) {
+    public StreamEntry xAdd(String stream, String entryKey, Map<String, String> values) {
         String[] args = new String[(values.size() * 2) +3];
 
         args[0] = Commands.Keys.XADD;
@@ -264,6 +264,7 @@ public class Quipu extends PubSubQuipu implements Commands, Stream, AutoCloseabl
             args[i+1] = entry.getValue();
             i += 2;
         }
-        return call(args);
+
+        return null;
     }
 }   
