@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-public class Quipu extends PubSubQuipu implements Commands, AutoCloseable {
+import org.gksx.quipu.pubsub.OnMessageAction;
+import org.gksx.quipu.pubsub.PubSubQuipu;
+
+public class Quipu extends PubSubQuipu implements Commands, Stream, AutoCloseable {
     private StreamHandler streamHandler;
 
     public Quipu(String uri, int port)  {
@@ -87,7 +91,7 @@ public class Quipu extends PubSubQuipu implements Commands, AutoCloseable {
 
     @Override
     public void set(String key, String value) {
-        streamHandler.prepareArgsProcessReply(Commands.Keys.SET, key, value);
+        call(Commands.Keys.SET, key, value);
     }
 
     @Override
@@ -98,12 +102,12 @@ public class Quipu extends PubSubQuipu implements Commands, AutoCloseable {
 
     @Override
     public void setEx(String key, Long seconds, String value) {
-        streamHandler.prepareArgsProcessReply(Commands.Keys.SETEX, key, seconds.toString(), value);
+        call(Commands.Keys.SETEX, key, seconds.toString(), value);
     }
 
     @Override
     public Long ttl(String key) {
-        byte[] resp = (byte[])streamHandler.prepareArgsProcessReply(Commands.Keys.TTL, key);
+        byte[] resp = callRawByteArray(Commands.Keys.TTL, key);
         return toLong(resp);
     }
 
@@ -245,4 +249,21 @@ public class Quipu extends PubSubQuipu implements Commands, AutoCloseable {
         var resp = callRawByteArray(Commands.Keys.HGET, key, field);
         return toString(resp);
     }
-}
+
+    @Override
+    public String xAdd(String stream, String entryKey, Map<String, String> values) {
+        String[] args = new String[(values.size() * 2) +3];
+
+        args[0] = Commands.Keys.XADD;
+        args[1] = stream;
+        args[2] = entryKey;
+        var entries = values.entrySet();
+        int i = 3;
+        for (Entry<String,String> entry : entries) {
+            args[i] = entry.getKey();
+            args[i+1] = entry.getValue();
+            i += 2;
+        }
+        return call(args);
+    }
+}   

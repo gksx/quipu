@@ -1,4 +1,4 @@
-package org.gksx.quipu;
+package org.gksx.quipu.pubsub;
 
 public abstract class PubSubQuipu {
     
@@ -9,11 +9,11 @@ public abstract class PubSubQuipu {
 
     public abstract void close();
 
-    void setChannel(String channel){
+    public void setChannel(String channel){
         this.channel = channel;
     }
 
-    boolean isEventFromCurrentChannel(String recievingChannel){
+    public boolean isEventFromCurrentChannel(String recievingChannel){
         return recievingChannel.equals(channel);
     }
 }

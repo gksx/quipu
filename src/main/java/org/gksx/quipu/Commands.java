@@ -30,6 +30,7 @@ public interface Commands {
         static final String SETRANGE = "SETRANGE";
         static final String HGET = "HGET";
         static final String HGETALL = "HGETALL";
+        static final String XADD = "XADD";
     }
       
     String get(String key);
@@ -55,4 +56,8 @@ public interface Commands {
     Long setRange(String key, Long offset, String value);
     Map<String, String> hgetAll(String key);
     String hget(String key, String field);
+
+    interface Stream {
+        String xAdd(String stream, String entryKey, Map<String, String> values);
+    }
 }

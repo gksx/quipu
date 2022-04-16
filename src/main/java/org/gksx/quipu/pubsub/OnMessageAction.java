@@ -1,4 +1,4 @@
-package org.gksx.quipu;
+package org.gksx.quipu.pubsub;
 
 @FunctionalInterface
 public interface OnMessageAction {
