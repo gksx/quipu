@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gksx.quipu.Quipu;
+import org.gksx.quipu.StreamEntry;
 import org.junit.Test;
 
 public class QuipuStreamTest {
@@ -17,7 +18,7 @@ public class QuipuStreamTest {
         map.put("key1", "value1");
         map.put("key2", "value2");
 
-        String key = qs.xAdd("mystream", "*", map);
+        StreamEntry key = qs.xAdd("mystream", "*", map);
         assertTrue(key != null);
         qs.close();
 
