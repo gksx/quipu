@@ -23,7 +23,7 @@ public class Connection {
     }
 
     char read() {
-        try{
+        try {
             return (char) inputStream.read();
         } catch (IOException e) {
             throw new QuipuException(e.getMessage(), e);

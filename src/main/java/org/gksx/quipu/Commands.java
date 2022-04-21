@@ -31,6 +31,7 @@ public interface Commands {
         static final String HGET = "HGET";
         static final String HGETALL = "HGETALL";
         static final String XADD = "XADD";
+        static final String XRANGE = "XRANGE";
     }
       
     String get(String key);

@@ -2,6 +2,8 @@ package org.gksx.quipu;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 class StreamHandler {
 
@@ -37,8 +39,38 @@ class StreamHandler {
         }                  
     }
 
+    public List<QuipuResponse> proccessReplyNew() {
+        char prefix = connection.read();
+
+        List<QuipuResponse> list = new ArrayList<>();
+
+        switch (prefix){
+            case RespConstants.DOLLAR_BYTE: {
+                int len = respLength();
+                if (len == RespConstants.NILVALUE)
+                    return null;
+                var q = parseBulkString(len);
+                list.add(new QuipuResponse(q, ResponseType.STRING));
+            }
+            case RespConstants.ASTERISK_BYTE:
+                // list.add(bulkArrayew());
+            case RespConstants.PLUS_BYTE:
+                list.add(new QuipuResponse(connection.readLine(), ResponseType.STRING));
+            case RespConstants.COLON_BYTE:
+                list.add(new QuipuResponse(connection.readLine(), ResponseType.LONG));
+            case RespConstants.MINUS_BYTE:{
+                String errorMessage = new String(connection.readLine());
+                throw new QuipuException(errorMessage);
+            }    
+        }
+        if (list.size() == 0)
+            throw new QuipuException("somethin went wrong");
+        
+        return list;                  
+    }
+
     public Object prepareArgsProcessReply(String... args) {
-        var formatted = StreamHandler.toBulkArray(args);
+        var formatted = toBulkArray(args);
         connection.writeToServer(formatted);
         return proccessReply();
     }
@@ -61,6 +93,20 @@ class StreamHandler {
 
         for(var i = 0; i < elemnts; i++) {
             list[i] = new String((byte[])proccessReply());
+        }
+
+        return list;
+    }
+
+    public List<QuipuResponse> bulkArrayew() {
+        int elemnts = respLength();
+
+        List<QuipuResponse> list = new ArrayList<>();
+
+        for(var i = 0; i < elemnts; i++) {
+            QuipuResponse head = null;
+            var q = proccessReplyNew();
+            list.add(proccessReplyNew().get(0));
         }
 
         return list;
