@@ -89,6 +89,11 @@ public class Quipu extends PubSubQuipu implements Commands, Stream, AutoCloseabl
         return toString(response);
     }
 
+    private List<QuipuResponse> callWithQuipuResponse(String... args){
+        var response = streamHandler.proccessReplyNew();
+        return response;
+    }
+
     @Override
     public void set(String key, String value) {
         call(Commands.Keys.SET, key, value);
