@@ -49,10 +49,14 @@ public class Quipu extends PubSubQuipu implements Commands, Stream, AutoCloseabl
     }
 
     private byte[] callRawByteArray(String... args){
-        Object returnObject = streamHandler.prepareArgsProcessReply(args);
+        List<QuipuResponse> returnObject = streamHandler.prepareArgsProcessReply(args);
         if (returnObject == null)
             return null;
-        return (byte[])returnObject;
+
+        return returnObject.stream()
+            .findFirst()
+            .orElseThrow()
+            .buffer();
     }
 
     private String[] callRawExpectList(String... args){
@@ -87,11 +91,6 @@ public class Quipu extends PubSubQuipu implements Commands, Stream, AutoCloseabl
     public String get(String key) {
         byte[] response = callRawByteArray(Commands.Keys.GET, key);
         return toString(response);
-    }
-
-    private List<QuipuResponse> callWithQuipuResponse(String... args){
-        var response = streamHandler.proccessReplyNew();
-        return response;
     }
 
     @Override
@@ -174,7 +173,7 @@ public class Quipu extends PubSubQuipu implements Commands, Stream, AutoCloseabl
     @Override
     public void listen(OnMessageAction onMessageAction) {
         while(true) {
-            Object resp = streamHandler.proccessReply();
+            Object resp = streamHandler.proccessReplyNew();
             if (resp instanceof String[]) {
                 String[] bulkArray = (String[]) resp;
                 if (isEventFromCurrentChannel(bulkArray[1])) {

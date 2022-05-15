@@ -19,7 +19,11 @@ class QuipuResponse {
 
     void add(QuipuResponse quipuResponse){
         lsit.add(quipuResponse);
-    } 
+    }
+    
+    byte[] buffer(){
+        return buffer;
+    }
 }
 
 /**
