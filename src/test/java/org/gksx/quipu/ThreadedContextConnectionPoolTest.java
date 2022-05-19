@@ -1,4 +1,4 @@
-package org.gksx;
+package org.gksx.quipu;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.gksx.quipu.Quipu;
+
 import org.gksx.quipu.pool.QuipuPool;
 import org.junit.After;
 import org.junit.Before;

@@ -1,9 +1,7 @@
-package org.gksx;
+package org.gksx.quipu;
 
 import static org.junit.Assert.assertEquals;
 
-import org.gksx.quipu.Quipu;
-import org.gksx.quipu.QuipuException;
 import org.junit.Test;
 
 public class PubSubQuipuTest {

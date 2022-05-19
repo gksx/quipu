@@ -13,10 +13,9 @@ class StreamHandler {
         this.connection = connection;
     }
 
-    public List<QuipuResponse> proccessReplyNew() {
+    public QuipuResponse processReply(QuipuResponse qr) {
+        
         char prefix = connection.read();
-
-        List<QuipuResponse> list = new ArrayList<>();
 
         switch (prefix){
             case RespConstants.DOLLAR_BYTE: {
@@ -24,33 +23,32 @@ class StreamHandler {
                 if (len == RespConstants.NILVALUE)
                     return null;
                 var q = parseBulkString(len);
-                list.add(new QuipuResponse(q, ResponseType.STRING));
-                break;
+                return new QuipuResponse(q, ResponseType.STRING);
             }
             case RespConstants.ASTERISK_BYTE:
                 break;
                 // list.add(bulkArrayew());
             case RespConstants.PLUS_BYTE:
-                list.add(new QuipuResponse(connection.readLine(), ResponseType.STRING));
-                break;
+                return new QuipuResponse(connection.readLine(), ResponseType.STRING);
             case RespConstants.COLON_BYTE:
-                list.add(new QuipuResponse(connection.readLine(), ResponseType.LONG));
-                break;
+                return new QuipuResponse(connection.readLine(), ResponseType.LONG);
             case RespConstants.MINUS_BYTE:{
                 String errorMessage = new String(connection.readLine());
                 throw new QuipuException(errorMessage);
-            }    
+            }
         }
-        if (list.size() == 0)
-            throw new QuipuException("somethin went wrong");
-        
-        return list;                  
+
+        throw new QuipuException("somethin went wrong");
     }
 
-    public List<QuipuResponse> prepareArgsProcessReply(String... args) {
+    public QuipuResponse processReply() {
+        return processReply(null);
+    }
+
+    public QuipuResponse prepareArgsProcessReply(String... args) {
         var formatted = toBulkArray(args);
         connection.writeToServer(formatted);
-        return proccessReplyNew();
+        return processReply();
     }
 
     private byte[] parseBulkString(int len){
@@ -64,18 +62,15 @@ class StreamHandler {
         return buf;
     }
 
-    public List<QuipuResponse> bulkArrayew() {
+    public QuipuResponse bulkArrayew() {
         int elemnts = respLength();
-
-        List<QuipuResponse> list = new ArrayList<>();
-
+        QuipuResponse head = null;
         for(var i = 0; i < elemnts; i++) {
-            QuipuResponse head = null;
-            var q = proccessReplyNew();
-            list.add(proccessReplyNew().get(0));
+            
+            var q = processReply();
         }
 
-        return list;
+        return head;
     }
 
     private int respLength(){

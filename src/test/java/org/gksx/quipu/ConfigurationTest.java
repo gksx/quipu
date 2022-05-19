@@ -1,9 +1,7 @@
-package org.gksx;
+package org.gksx.quipu;
 
 import static org.junit.Assert.assertEquals;
 
-import org.gksx.quipu.Configuration;
-import org.gksx.quipu.QuipuConfiguration;
 import org.junit.Test;
 
 public class ConfigurationTest {
