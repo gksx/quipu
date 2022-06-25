@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class Connection {
+class Connection {
 
     private OutputStream outputStream;
     private InputStream inputStream;
@@ -40,9 +40,15 @@ public class Connection {
         }
     }
 
-    int readBuf(byte[] buf, int i, int len) {
+    byte[] read(int len) {
         try {
-            return inputStream.read(buf, i, len);
+            byte[] buf = new byte[len];
+            int read = inputStream.read(buf, 0, len);
+            
+            if (read != len)
+                throw new IOException("something went wrong");
+
+            return buf;
         } catch (IOException e) {
             throw new QuipuException(e.getMessage(), e);
         }
@@ -97,7 +103,7 @@ public class Connection {
         }
     }
 
-    public boolean isOpen(){
+    boolean isOpen(){
         return !this.socket.isClosed();
     }
 }

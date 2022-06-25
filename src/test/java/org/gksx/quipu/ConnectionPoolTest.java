@@ -1,4 +1,4 @@
-package org.gksx;
+package org.gksx.quipu;
 
 import org.gksx.quipu.pool.QuipuPool;
 import org.junit.After;

@@ -7,12 +7,12 @@ import java.util.List;
  * Only for internal use, never expose to user
  */
 class QuipuResponse {
-    private byte[] buffer;
+    private byte[] content;
     private ResponseType responseType;
     private List<QuipuResponse> lsit;
 
     QuipuResponse(byte[] buffer, ResponseType responseType) {
-        this.buffer = buffer;
+        this.content = buffer;
         this.responseType = responseType;
         this.lsit = new ArrayList<>();
     }
@@ -21,8 +21,8 @@ class QuipuResponse {
         lsit.add(quipuResponse);
     }
     
-    byte[] buffer(){
-        return buffer;
+    byte[] content(){
+        return content;
     }
 }
 

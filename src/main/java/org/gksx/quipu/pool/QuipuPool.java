@@ -38,7 +38,7 @@ public class QuipuPool implements AutoCloseable {
         Optional<PoolInstance> poolInstance = Optional.empty();
         while(poolInstance.isEmpty()){
             poolInstance = this.clientPool.stream()
-            .filter(x -> !x.getIsInUse().get())
+            .filter(x -> !x.getIsInUse())
             .findFirst();
         }
         var client = poolInstance.get();
@@ -49,7 +49,7 @@ public class QuipuPool implements AutoCloseable {
 
     public void releaseAll() {
         for (PoolInstance quipu : clientPool) {
-            if (quipu.getIsInUse().get()){
+            if (quipu.getIsInUse()){
                 throw new QuipuPoolException("client is in use");
             }
             quipu.getQuipu().close();

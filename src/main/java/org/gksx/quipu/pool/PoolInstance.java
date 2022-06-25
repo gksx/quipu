@@ -17,8 +17,8 @@ class PoolInstance {
         return quipu;
     }
 
-    public AtomicBoolean getIsInUse() {
-        return isInUse;
+    public boolean getIsInUse() {
+        return isInUse.get();
     }
 
     public void setIsInUse() {

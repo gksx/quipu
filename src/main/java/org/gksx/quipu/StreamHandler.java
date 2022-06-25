@@ -2,8 +2,6 @@ package org.gksx.quipu;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 class StreamHandler {
 
@@ -22,10 +20,11 @@ class StreamHandler {
                 int len = respLength();
                 if (len == RespConstants.NILVALUE)
                     return null;
-                var q = parseBulkString(len);
-                return new QuipuResponse(q, ResponseType.STRING);
+                byte[] content = parseBulkString(len);
+                return new QuipuResponse(content, ResponseType.STRING);
             }
             case RespConstants.ASTERISK_BYTE:
+                bulkArrayew();
                 break;
                 // list.add(bulkArrayew());
             case RespConstants.PLUS_BYTE:
@@ -54,12 +53,10 @@ class StreamHandler {
     private byte[] parseBulkString(int len){
 
         if (len == 0) return null;
-        
-        byte[] buf = new byte[len];
-        
-        connection.readBuf(buf, 0, len);
+                
+        byte[] content = connection.read(len);
         connection.moveToEndOfLine();
-        return buf;
+        return content;
     }
 
     public QuipuResponse bulkArrayew() {

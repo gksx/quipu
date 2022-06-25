@@ -53,7 +53,7 @@ public class Quipu extends PubSubQuipu implements Commands, Stream, AutoCloseabl
         if (returnObject == null)
             return null;
 
-        return returnObject.buffer();
+        return returnObject.content();
     }
 
     private String[] callRawExpectList(String... args){
